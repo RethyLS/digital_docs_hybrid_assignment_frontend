@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/core/auth/auth_provider.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/auth/screens/login_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/dashboard/screens/dashboard_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/documents/screens/documents_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/screens/employees_screen.dart';
@@ -15,65 +18,101 @@ final GlobalKey<NavigatorState> _documentsNavigatorKey = GlobalKey<NavigatorStat
 final GlobalKey<NavigatorState> _employeesNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'employeesNav');
 final GlobalKey<NavigatorState> _settingsNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'settingsNav');
 
-final goRouter = GoRouter(
-  navigatorKey: _rootNavigatorKey,
-  initialLocation: '/splash',
-  routes: [
-    GoRoute(
-      path: '/splash',
-      builder: (context, state) => const SplashScreen(),
-    ),
-    // Define About as a root route so it can be pushed onto the main shell
-    GoRoute(
-      path: '/about',
-      builder: (context, state) => const AboutScreen(),
-    ),
-    GoRoute(
-      path: '/appearance',
-      builder: (context, state) => const AppearanceScreen(),
-    ),
-    StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) {
-        return MainNavigationScreen(navigationShell: navigationShell);
-      },
-      branches: [
-        StatefulShellBranch(
-          navigatorKey: _dashboardNavigatorKey,
-          routes: [
-            GoRoute(
-              path: '/dashboard',
-              builder: (context, state) => const DashboardScreen(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          navigatorKey: _documentsNavigatorKey,
-          routes: [
-            GoRoute(
-              path: '/documents',
-              builder: (context, state) => const DocumentsScreen(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          navigatorKey: _employeesNavigatorKey,
-          routes: [
-            GoRoute(
-              path: '/employees',
-              builder: (context, state) => const EmployeesScreen(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          navigatorKey: _settingsNavigatorKey,
-          routes: [
-            GoRoute(
-              path: '/settings',
-              builder: (context, state) => const SettingsScreen(),
-            ),
-          ],
-        ),
-      ],
-    ),
-  ],
-);
+final routerProvider = Provider<GoRouter>((ref) {
+  final isAuthenticated = ref.watch(authProvider);
+  final isInitialized = ref.watch(appInitializedProvider);
+
+  return GoRouter(
+    navigatorKey: _rootNavigatorKey,
+    initialLocation: '/splash',
+    redirect: (context, state) {
+      final isSplash = state.matchedLocation == '/splash';
+      final isLoggingIn = state.matchedLocation == '/login';
+
+      // 1. If not initialized, we MUST be on the splash screen
+      if (!isInitialized) {
+        return isSplash ? null : '/splash';
+      }
+
+      // 2. Once initialized, handle Auth redirection
+      
+      // If we've just initialized and are still on splash, decide where to go
+      if (isSplash) {
+        return isAuthenticated ? '/dashboard' : '/login';
+      }
+
+      // Standard Auth Guard
+      if (!isAuthenticated && !isLoggingIn) {
+        return '/login';
+      }
+
+      // Redirect away from login if already authenticated
+      if (isAuthenticated && isLoggingIn) {
+        return '/dashboard';
+      }
+
+      return null;
+    },
+    routes: [
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/about',
+        builder: (context, state) => const AboutScreen(),
+      ),
+      GoRoute(
+        path: '/appearance',
+        builder: (context, state) => const AppearanceScreen(),
+      ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return MainNavigationScreen(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            navigatorKey: _dashboardNavigatorKey,
+            routes: [
+              GoRoute(
+                path: '/dashboard',
+                builder: (context, state) => const DashboardScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            navigatorKey: _documentsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: '/documents',
+                builder: (context, state) => const DocumentsScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            navigatorKey: _employeesNavigatorKey,
+            routes: [
+              GoRoute(
+                path: '/employees',
+                builder: (context, state) => const EmployeesScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            navigatorKey: _settingsNavigatorKey,
+            routes: [
+              GoRoute(
+                path: '/settings',
+                builder: (context, state) => const SettingsScreen(),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  );
+});

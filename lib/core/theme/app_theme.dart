@@ -9,12 +9,14 @@ class AppTheme {
   
   static const Color backgroundLight = Color(0xFFF8FAFC); // Slate 50
   static const Color surfaceLight = Colors.white;
+  static const Color inputFillLight = Color(0xFFF8FAFC); // Matches backgroundLight
   static const Color textPrimaryLight = Color(0xFF0F172A); // Slate 900
   static const Color textSecondaryLight = Color(0xFF64748B); // Slate 500
   static const Color borderLight = Color(0xFFE2E8F0); // Slate 200
 
   static const Color backgroundDark = Color(0xFF020817); // Darkest Slate
   static const Color surfaceDark = Color(0xFF0F172A); // Slate 900
+  static const Color inputFillDark = Color(0xFF020817); // Matches backgroundDark
   static const Color textPrimaryDark = Color(0xFFF8FAFC); // Slate 50
   static const Color textSecondaryDark = Color(0xFF94A3B8); // Slate 400
   static const Color borderDark = Color(0xFF1E293B); // Slate 800
@@ -90,21 +92,21 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surfaceLight,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        fillColor: inputFillLight,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: borderLight),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: borderLight),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: primaryColor, width: 2),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: primaryColor, width: 1.5),
         ),
-        hintStyle: GoogleFonts.inter(color: textSecondaryLight),
+        hintStyle: GoogleFonts.inter(color: textSecondaryLight.withOpacity(0.5)),
       ),
       dividerTheme: const DividerThemeData(
         color: borderLight,
@@ -185,21 +187,21 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: backgroundDark,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        fillColor: inputFillDark,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: borderDark),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: borderDark),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: primaryColor, width: 2),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: primaryColor, width: 1.5),
         ),
-        hintStyle: GoogleFonts.inter(color: textSecondaryDark),
+        hintStyle: GoogleFonts.inter(color: textSecondaryDark.withOpacity(0.5)),
       ),
       dividerTheme: const DividerThemeData(
         color: borderDark,

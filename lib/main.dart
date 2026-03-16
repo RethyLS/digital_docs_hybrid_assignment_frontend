@@ -18,13 +18,14 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
+    final router = ref.watch(routerProvider);
 
     return MaterialApp.router(
       title: 'HR Document App',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
-      routerConfig: goRouter,
+      routerConfig: router,
       debugShowCheckedModeBanner: false,
     );
   }

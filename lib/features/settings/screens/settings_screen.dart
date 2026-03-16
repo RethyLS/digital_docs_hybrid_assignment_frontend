@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/core/auth/auth_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -97,7 +99,9 @@ class SettingsScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  ref.read(authProvider.notifier).logout();
+                },
                 icon: const HeroIcon(HeroIcons.arrowRightOnRectangle, size: 18),
                 label: const Text('Log Out'),
                 style: OutlinedButton.styleFrom(
