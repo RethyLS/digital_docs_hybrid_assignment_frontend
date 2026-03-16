@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/routing/app_router.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/theme/app_theme.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/core/theme/theme_provider.dart';
 
 void main() {
   runApp(
@@ -16,11 +17,13 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
+
     return MaterialApp.router(
       title: 'HR Document App',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system, // Uses device's light/dark mode by default
+      themeMode: themeMode,
       routerConfig: goRouter,
       debugShowCheckedModeBanner: false,
     );

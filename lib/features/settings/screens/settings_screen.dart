@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 
@@ -7,8 +8,6 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -77,7 +76,7 @@ class SettingsScreen extends StatelessWidget {
                 icon: HeroIcons.swatch,
                 title: 'Appearance',
                 subtitle: 'Theme, colors, and styling',
-                onTap: () {},
+                onTap: () => context.push('/appearance'),
               ),
               _buildSettingItem(
                 context,
@@ -91,7 +90,7 @@ class SettingsScreen extends StatelessWidget {
                 icon: HeroIcons.informationCircle,
                 title: 'About',
                 subtitle: 'App version and info',
-                onTap: () {},
+                onTap: () => context.push('/about'),
               ),
             ]),
             const SizedBox(height: 32),
