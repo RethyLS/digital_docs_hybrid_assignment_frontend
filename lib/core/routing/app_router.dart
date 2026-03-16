@@ -5,6 +5,7 @@ import 'package:hybrid_digital_docs_assignment_frontend/features/documents/scree
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/screens/employees_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/main_navigation/screens/main_navigation_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screens/settings_screen.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/splash/screens/splash_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _dashboardNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'dashboardNav');
@@ -14,8 +15,12 @@ final GlobalKey<NavigatorState> _settingsNavigatorKey = GlobalKey<NavigatorState
 
 final goRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/dashboard',
+  initialLocation: '/splash',
   routes: [
+    GoRoute(
+      path: '/splash',
+      builder: (context, state) => const SplashScreen(),
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return MainNavigationScreen(navigationShell: navigationShell);

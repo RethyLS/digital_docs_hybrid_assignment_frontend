@@ -18,10 +18,8 @@ migrate_working_dir/
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
+# VS Code related
+.vscode/
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -32,14 +30,47 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+.metadata
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.gr.dart
+
+# Android related
+/android/app/debug
+/android/app/profile
+/android/app/release
+/android/app/build/
+/android/.gradle/
+/android/.idea/
+local.properties
+*.keystore
+*.jks
+
+# iOS related
+/ios/Pods/
+/ios/.symlinks/
+/ios/Flutter/Flutter.framework
+/ios/Flutter/Flutter.podspec
+/ios/DerivedData/
+*.moved-aside
+Podfile.lock
+
+# FVM
+.fvm/
+
+# Environment and keys
+.env
+key.properties
+
+# Native binaries
+**/*.so
+**/*.apk
+**/*.aab
 
 # Symbolication related
 app.*.symbols
 
 # Obfuscation related
 app.*.map.json
-
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
