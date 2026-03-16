@@ -1,0 +1,231 @@
+import 'package:flutter/material.dart';
+import 'package:heroicons/heroicons.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
+
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Settings'),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 16),
+            _buildUserHeader(context),
+            const SizedBox(height: 24),
+            _buildSectionHeader(context, 'Account'),
+            _buildSettingsGroup(context, [
+              _buildSettingItem(
+                context,
+                icon: HeroIcons.user,
+                title: 'My Profile',
+                subtitle: 'Personal information and avatar',
+                onTap: () {},
+              ),
+              _buildSettingItem(
+                context,
+                icon: HeroIcons.lockClosed,
+                title: 'Security',
+                subtitle: 'Password and authentication',
+                onTap: () {},
+              ),
+              _buildSettingItem(
+                context,
+                icon: HeroIcons.bell,
+                title: 'Notifications',
+                subtitle: 'Manage alerts and updates',
+                onTap: () {},
+              ),
+            ]),
+            const SizedBox(height: 24),
+            _buildSectionHeader(context, 'Organization'),
+            _buildSettingsGroup(context, [
+              _buildSettingItem(
+                context,
+                icon: HeroIcons.users,
+                title: 'User Management',
+                subtitle: 'Manage staff and permissions',
+                onTap: () {},
+              ),
+              _buildSettingItem(
+                context,
+                icon: HeroIcons.shieldCheck,
+                title: 'Roles & Permissions',
+                subtitle: 'Configure access levels',
+                onTap: () {},
+              ),
+              _buildSettingItem(
+                context,
+                icon: HeroIcons.key,
+                title: 'Document Configuration',
+                subtitle: 'Manage prefixes and categories',
+                onTap: () {},
+              ),
+            ]),
+            const SizedBox(height: 24),
+            _buildSectionHeader(context, 'App Preferences'),
+            _buildSettingsGroup(context, [
+              _buildSettingItem(
+                context,
+                icon: HeroIcons.swatch,
+                title: 'Appearance',
+                subtitle: 'Theme, colors, and styling',
+                onTap: () {},
+              ),
+              _buildSettingItem(
+                context,
+                icon: HeroIcons.language,
+                title: 'Language',
+                subtitle: 'English, Khmer, etc.',
+                onTap: () {},
+              ),
+              _buildSettingItem(
+                context,
+                icon: HeroIcons.informationCircle,
+                title: 'About',
+                subtitle: 'App version and info',
+                onTap: () {},
+              ),
+            ]),
+            const SizedBox(height: 32),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: OutlinedButton.icon(
+                onPressed: () {},
+                icon: const HeroIcon(HeroIcons.arrowRightOnRectangle, size: 18),
+                label: const Text('Log Out'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.redAccent,
+                  side: const BorderSide(color: Colors.redAccent),
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 48),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUserHeader(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: CustomCard(
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+              child: Text(
+                'AD',
+                style: TextStyle(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Admin User',
+                    style: theme.textTheme.titleLarge?.copyWith(fontSize: 18),
+                  ),
+                  Text(
+                    'admin@example.com',
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              icon: const HeroIcon(HeroIcons.chevronRight, size: 20),
+              onPressed: () {},
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, bottom: 8),
+      child: Text(
+        title.toUpperCase(),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            ),
+      ),
+    );
+  }
+
+  Widget _buildSettingsGroup(BuildContext context, List<Widget> children) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).brightness == Brightness.dark 
+                ? Colors.black.withOpacity(0.3) 
+                : Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Column(
+          children: children,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSettingItem(
+    BuildContext context, {
+    required HeroIcons icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    return ListTile(
+      leading: HeroIcon(icon, size: 20, color: theme.colorScheme.primary),
+      title: Text(
+        title,
+        style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: theme.textTheme.bodySmall,
+      ),
+      trailing: Icon(
+        Icons.chevron_right, // Keep simple chevron or use HeroIcons.chevronRight
+        size: 16,
+        color: theme.colorScheme.onSurface.withOpacity(0.3),
+      ),
+      onTap: onTap,
+    );
+  }
+}
