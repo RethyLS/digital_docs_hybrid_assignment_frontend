@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  static const Color primaryColor = Color(0xFF0F172A); // Slate 900
-  static const Color primaryColorLight = Color(0xFF334155); // Slate 700
-  static const Color accentColor = Color(0xFF2563EB); // Blue 600
+  // Brand Colors
+  static const Color primaryColor = Color(0xFF00B55B); // Vibrant Green from Logo
+  static const Color primaryColorDark = Color(0xFF008F47);
+  static const Color accentColor = Color(0xFF00B55B);
   
   static const Color backgroundLight = Color(0xFFF8FAFC); // Slate 50
   static const Color surfaceLight = Colors.white;
@@ -43,6 +44,9 @@ class AppTheme {
         backgroundColor: surfaceLight,
         foregroundColor: textPrimaryLight,
         elevation: 0,
+        scrolledUnderElevation: 0.5,
+        shadowColor: Colors.black.withOpacity(0.1),
+        surfaceTintColor: Colors.transparent,
         centerTitle: true,
         titleTextStyle: GoogleFonts.inter(
           color: textPrimaryLight,
@@ -50,6 +54,30 @@ class AppTheme {
           fontWeight: FontWeight.w600,
         ),
         iconTheme: const IconThemeData(color: textPrimaryLight),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: surfaceLight,
+        indicatorColor: primaryColor.withOpacity(0.1),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: primaryColor);
+          }
+          return IconThemeData(color: textSecondaryLight);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return GoogleFonts.inter(
+              color: primaryColor,
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+            );
+          }
+          return GoogleFonts.inter(
+            color: textSecondaryLight,
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+          );
+        }),
       ),
       cardTheme: CardThemeData(
         color: surfaceLight,
@@ -89,10 +117,10 @@ class AppTheme {
   static ThemeData get darkTheme {
     return ThemeData(
       brightness: Brightness.dark,
-      primaryColor: primaryColorLight,
+      primaryColor: primaryColor,
       scaffoldBackgroundColor: backgroundDark,
       colorScheme: const ColorScheme.dark(
-        primary: primaryColorLight,
+        primary: primaryColor,
         secondary: accentColor,
         surface: surfaceDark,
         error: Colors.redAccent,
@@ -111,6 +139,9 @@ class AppTheme {
         backgroundColor: surfaceDark,
         foregroundColor: textPrimaryDark,
         elevation: 0,
+        scrolledUnderElevation: 0.5,
+        shadowColor: Colors.black.withOpacity(0.3),
+        surfaceTintColor: Colors.transparent,
         centerTitle: true,
         titleTextStyle: GoogleFonts.inter(
           color: textPrimaryDark,
@@ -118,6 +149,30 @@ class AppTheme {
           fontWeight: FontWeight.w600,
         ),
         iconTheme: const IconThemeData(color: textPrimaryDark),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: surfaceDark,
+        indicatorColor: primaryColor.withOpacity(0.1),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(color: primaryColor);
+          }
+          return IconThemeData(color: textSecondaryDark);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return GoogleFonts.inter(
+              color: primaryColor,
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+            );
+          }
+          return GoogleFonts.inter(
+            color: textSecondaryDark,
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+          );
+        }),
       ),
       cardTheme: CardThemeData(
         color: surfaceDark,
@@ -130,7 +185,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: backgroundDark, // Slightly darker for inputs in dark mode
+        fillColor: backgroundDark,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
@@ -142,7 +197,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: textPrimaryDark, width: 2),
+          borderSide: const BorderSide(color: primaryColor, width: 2),
         ),
         hintStyle: GoogleFonts.inter(color: textSecondaryDark),
       ),

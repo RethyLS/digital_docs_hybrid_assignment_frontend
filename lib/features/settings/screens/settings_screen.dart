@@ -211,7 +211,7 @@ class SettingsScreen extends StatelessWidget {
   }) {
     final theme = Theme.of(context);
     return ListTile(
-      leading: HeroIcon(icon, size: 20, color: theme.colorScheme.primary),
+      leading: HeroIcon(icon, size: 20, color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
       title: Text(
         title,
         style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
