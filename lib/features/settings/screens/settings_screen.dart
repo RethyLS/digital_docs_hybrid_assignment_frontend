@@ -37,13 +37,6 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: 'Password and authentication',
                 onTap: () {},
               ),
-              _buildSettingItem(
-                context,
-                icon: HeroIcons.bell,
-                title: 'Notifications',
-                subtitle: 'Manage alerts and updates',
-                onTap: () {},
-              ),
             ]),
             const SizedBox(height: 24),
             _buildSectionHeader(context, 'Organization'),
@@ -85,7 +78,7 @@ class SettingsScreen extends ConsumerWidget {
                 icon: HeroIcons.language,
                 title: 'Language',
                 subtitle: 'English, Khmer, etc.',
-                onTap: () {},
+                onTap: () => context.push('/language'),
               ),
               _buildSettingItem(
                 context,
@@ -157,7 +150,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
             IconButton(
-              icon: const HeroIcon(HeroIcons.chevronRight, size: 20),
+              icon: const HeroIcon(HeroIcons.pencilSquare, size: 20),
               onPressed: () {},
             ),
           ],
@@ -198,8 +191,15 @@ class SettingsScreen extends ConsumerWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: Column(
-          children: children,
+        child: ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: children.length,
+          separatorBuilder: (context, index) => Divider(
+            height: 1,
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+          ),
+          itemBuilder: (context, index) => children[index],
         ),
       ),
     );
@@ -222,11 +222,6 @@ class SettingsScreen extends ConsumerWidget {
       subtitle: Text(
         subtitle,
         style: theme.textTheme.bodySmall,
-      ),
-      trailing: Icon(
-        Icons.chevron_right, // Keep simple chevron or use HeroIcons.chevronRight
-        size: 16,
-        color: theme.colorScheme.onSurface.withOpacity(0.3),
       ),
       onTap: onTap,
     );

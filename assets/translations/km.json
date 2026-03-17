@@ -1,0 +1,38 @@
+{
+  "app_title": "ប្រព័ន្ធគ្រប់គ្រងឯកសារ",
+  "dashboard": {
+    "title": "ផ្ទាំងគ្រប់គ្រង",
+    "overview": "ទិដ្ឋភាពទូទៅ",
+    "total_employees": "បុគ្គលិកសរុប",
+    "active_documents": "ឯកសារសកម្ម",
+    "pending_approvals": "រង់ចាំការអនុម័ត",
+    "departments": "នាយកដ្ឋាន",
+    "recent_activities": "សកម្មភាពថ្មីៗ"
+  },
+  "documents": {
+    "title": "ឯកសារ",
+    "search_hint": "ស្វែងរកឯកសារ..."
+  },
+  "employees": {
+    "title": "បុគ្គលិក",
+    "search_hint": "ស្វែងរកបុគ្គលិក..."
+  },
+  "settings": {
+    "title": "ការកំណត់",
+    "account": "គណនី",
+    "organization": "អង្គភាព",
+    "app_preferences": "ការកំណត់កម្មវិធី",
+    "my_profile": "ប្រវត្តិរូបរបស់ខ្ញុំ",
+    "security": "សុវត្ថិភាព",
+    "appearance": "រូបរាង",
+    "language": "ភាសា",
+    "about": "អំពីកម្មវិធី",
+    "logout": "ចាកចេញ"
+  },
+  "language_screen": {
+    "title": "ភាសា",
+    "choose_language": "ជ្រើសរើសភាសាដែលអ្នកចង់ប្រើ",
+    "english": "ភាសាអង់គ្លេស",
+    "khmer": "ភាសាខ្មែរ"
+  }
+}

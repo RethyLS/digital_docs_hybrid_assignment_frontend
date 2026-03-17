@@ -56,12 +56,26 @@ class EmployeesScreen extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search employees...',
-                prefixIcon: const Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: HeroIcon(HeroIcons.magnifyingGlass, size: 20),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search employees...',
+                  fillColor: Colors.transparent, // Color is now handled by Container
+                  prefixIcon: const Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: HeroIcon(HeroIcons.magnifyingGlass, size: 20),
+                  ),
                 ),
               ),
             ),

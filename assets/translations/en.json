@@ -1,0 +1,38 @@
+{
+  "app_title": "HR Document System",
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "Overview",
+    "total_employees": "Total Employees",
+    "active_documents": "Active Documents",
+    "pending_approvals": "Pending Approvals",
+    "departments": "Departments",
+    "recent_activities": "Recent Activities"
+  },
+  "documents": {
+    "title": "Documents",
+    "search_hint": "Search documents..."
+  },
+  "employees": {
+    "title": "Employees",
+    "search_hint": "Search employees..."
+  },
+  "settings": {
+    "title": "Settings",
+    "account": "Account",
+    "organization": "Organization",
+    "app_preferences": "App Preferences",
+    "my_profile": "My Profile",
+    "security": "Security",
+    "appearance": "Appearance",
+    "language": "Language",
+    "about": "About",
+    "logout": "Log Out"
+  },
+  "language_screen": {
+    "title": "Language",
+    "choose_language": "Choose your preferred language",
+    "english": "English",
+    "khmer": "Khmer"
+  }
+}

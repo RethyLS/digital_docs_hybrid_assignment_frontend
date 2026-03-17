@@ -85,11 +85,6 @@ class EmployeeCard extends StatelessWidget {
               ],
             ),
           ),
-          HeroIcon(
-            HeroIcons.chevronRight,
-            size: 16,
-            color: theme.colorScheme.onSurface.withOpacity(0.3),
-          ),
         ],
       ),
     );

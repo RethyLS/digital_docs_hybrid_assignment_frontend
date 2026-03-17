@@ -75,23 +75,37 @@ class DocumentsScreen extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search documents...',
-                prefixIcon: const Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: HeroIcon(HeroIcons.magnifyingGlass, size: 20),
-                ),
-                suffixIcon: Container(
-                  margin: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(4),
+            child: Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
-                  child: const HeroIcon(
-                    HeroIcons.commandLine,
-                    size: 14,
-                    color: Colors.blueAccent,
+                ],
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search documents...',
+                  fillColor: Colors.transparent, // Color is now handled by Container
+                  prefixIcon: const Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: HeroIcon(HeroIcons.magnifyingGlass, size: 20),
+                  ),
+                  suffixIcon: Container(
+                    margin: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const HeroIcon(
+                      HeroIcons.commandLine,
+                      size: 14,
+                      color: Colors.blueAccent,
+                    ),
                   ),
                 ),
               ),
