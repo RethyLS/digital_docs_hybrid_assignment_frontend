@@ -1,45 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
-import 'package:hybrid_digital_docs_assignment_frontend/features/employees/models/employee.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/employees/providers/employee_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/widgets/employee_card.dart';
-import 'package:hybrid_digital_docs_assignment_frontend/shared/models/branch.dart';
-import 'package:hybrid_digital_docs_assignment_frontend/shared/models/department.dart';
 
-class EmployeesScreen extends StatelessWidget {
+class EmployeesScreen extends ConsumerWidget {
   const EmployeesScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Mock Data
-    final mockEmployees = [
-      Employee(
-        id: 1,
-        firstName: 'John',
-        lastName: 'Doe',
-        position: 'Software Engineer',
-        employeeCode: 'EMP-001',
-        department: Department(id: 1, name: 'IT Department'),
-        branch: Branch(id: 1, name: 'Main Office'),
-      ),
-      Employee(
-        id: 2,
-        firstName: 'Jane',
-        lastName: 'Smith',
-        position: 'HR Manager',
-        employeeCode: 'EMP-002',
-        department: Department(id: 2, name: 'Human Resources'),
-        branch: Branch(id: 1, name: 'Main Office'),
-      ),
-      Employee(
-        id: 3,
-        firstName: 'Alice',
-        lastName: 'Johnson',
-        position: 'UI/UX Designer',
-        employeeCode: 'EMP-003',
-        department: Department(id: 3, name: 'Design'),
-        branch: Branch(id: 2, name: 'Development Center'),
-      ),
-    ];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final employeesAsync = ref.watch(employeesProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -81,13 +51,24 @@ class EmployeesScreen extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              itemCount: mockEmployees.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                return EmployeeCard(employee: mockEmployees[index]);
+            child: employeesAsync.when(
+              data: (response) {
+                if (response.data.isEmpty) {
+                  return const Center(child: Text('No employees found.'));
+                }
+                return ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  itemCount: response.data.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    return EmployeeCard(employee: response.data[index]);
+                  },
+                );
               },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => Center(
+                child: Text('Failed to load employees:\n$error', textAlign: TextAlign.center),
+              ),
             ),
           ),
         ],
@@ -95,3 +76,4 @@ class EmployeesScreen extends StatelessWidget {
     );
   }
 }
+
