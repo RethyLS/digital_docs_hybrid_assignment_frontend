@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/documents/providers/document_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/documents/widgets/document_card.dart';
@@ -29,7 +30,7 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
         actions: [
           IconButton(
             icon: const HeroIcon(HeroIcons.plus, size: 24),
-            onPressed: () {},
+            onPressed: () => context.push('/documents/upload'),
           ),
           const SizedBox(width: 8),
         ],

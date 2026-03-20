@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/providers/employee_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/widgets/employee_card.dart';
@@ -29,7 +30,7 @@ class _EmployeesScreenState extends ConsumerState<EmployeesScreen> {
         actions: [
           IconButton(
             icon: const HeroIcon(HeroIcons.userPlus, size: 24),
-            onPressed: () {},
+            onPressed: () => context.push('/employees/add'),
           ),
           const SizedBox(width: 8),
         ],

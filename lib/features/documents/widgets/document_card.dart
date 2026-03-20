@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/core/utils/image_utils.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/documents/models/document.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/documents/repositories/document_repository.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class DocumentCard extends StatelessWidget {
+class DocumentCard extends ConsumerStatefulWidget {
   final Document document;
   final VoidCallback? onTap;
 
@@ -15,11 +19,80 @@ class DocumentCard extends StatelessWidget {
   });
 
   @override
+  ConsumerState<DocumentCard> createState() => _DocumentCardState();
+}
+
+class _DocumentCardState extends ConsumerState<DocumentCard> {
+  bool _isDownloading = false;
+
+  Future<void> _handleView() async {
+    if (widget.document.fileUrl == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Document URL is missing')),
+      );
+      return;
+    }
+    
+    final url = Uri.parse(getFullImageUrl(widget.document.fileUrl));
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open document')),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleDownload() async {
+    if (widget.document.fileUrl == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Document URL is missing')),
+      );
+      return;
+    }
+
+    setState(() => _isDownloading = true);
+
+    try {
+      final repo = ref.read(documentRepositoryProvider);
+      final url = getFullImageUrl(widget.document.fileUrl);
+      final fileName = widget.document.fileName ?? 'document_${widget.document.id}';
+      
+      final filePath = await repo.downloadDocument(url, fileName);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Downloaded to $filePath'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isDownloading = false);
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final document = widget.document;
     
     return CustomCard(
-      onTap: onTap,
+      onTap: widget.onTap ?? _handleView,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -29,7 +102,7 @@ class DocumentCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.1),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: HeroIcon(
@@ -55,35 +128,86 @@ class DocumentCard extends StatelessWidget {
                     Text(
                       document.documentCode ?? 'NO-CODE',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                   ],
                 ),
               ),
-              _buildStatusBadge(context, document.status),
+              if (_isDownloading)
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.0),
+                  child: SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
+              else
+                PopupMenuButton<String>(
+                  icon: HeroIcon(
+                    HeroIcons.ellipsisVertical,
+                    size: 20,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
+                  onSelected: (value) {
+                    if (value == 'view') _handleView();
+                    if (value == 'download') _handleDownload();
+                  },
+                  itemBuilder: (BuildContext context) => [
+                    PopupMenuItem(
+                      value: 'view',
+                      child: Row(
+                        children: [
+                          HeroIcon(HeroIcons.eye, size: 18, color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+                          const SizedBox(width: 8),
+                          const Text('View'),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'download',
+                      child: Row(
+                        children: [
+                          HeroIcon(HeroIcons.arrowDownTray, size: 18, color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+                          const SizedBox(width: 8),
+                          const Text('Download'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
           const SizedBox(height: 16),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Flexible(
-                child: _buildInfoItem(
-                  context, 
-                  HeroIcons.calendar, 
-                  document.expirationDate != null 
-                    ? DateFormat('MMM dd, yyyy').format(document.expirationDate!)
-                    : 'No Expiry'
+              Expanded(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: _buildInfoItem(
+                        context, 
+                        HeroIcons.calendar, 
+                        document.expirationDate != null 
+                          ? DateFormat('MMM dd, yyyy').format(document.expirationDate!)
+                          : 'No Expiry'
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Flexible(
+                      child: _buildInfoItem(
+                        context, 
+                        HeroIcons.tag, 
+                        document.category?.name ?? 'Uncategorized'
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 16),
-              Flexible(
-                child: _buildInfoItem(
-                  context, 
-                  HeroIcons.tag, 
-                  document.category?.name ?? 'Uncategorized'
-                ),
-              ),
+              const SizedBox(width: 8),
+              _buildStatusBadge(context, document.status),
             ],
           ),
         ],
@@ -99,10 +223,10 @@ class DocumentCard extends StatelessWidget {
         HeroIcon(
           icon,
           size: 14,
-          color: theme.colorScheme.onSurface.withOpacity(0.5),
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
         ),
         const SizedBox(width: 4),
-        Expanded(
+        Flexible(
           child: Text(
             text,
             style: theme.textTheme.bodySmall,
@@ -135,9 +259,9 @@ class DocumentCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Text(
         status?.toUpperCase() ?? 'UNKNOWN',
@@ -169,3 +293,4 @@ class DocumentCard extends StatelessWidget {
     }
   }
 }
+

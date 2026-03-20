@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/auth/auth_provider.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/core/utils/image_utils.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/users/providers/user_profile_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/skeleton.dart';
@@ -130,7 +131,7 @@ class SettingsScreen extends ConsumerWidget {
                 radius: 30,
                 backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
                 backgroundImage: user.image != null && user.image!.isNotEmpty 
-                    ? NetworkImage(user.image!) 
+                    ? NetworkImage(getFullImageUrl(user.image)) 
                     : null,
                 child: user.image == null || user.image!.isEmpty
                     ? Text(

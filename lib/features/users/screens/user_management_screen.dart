@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/users/providers/user_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/users/widgets/user_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
@@ -29,7 +30,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
         actions: [
           IconButton(
             icon: const HeroIcon(HeroIcons.userPlus, size: 24),
-            onPressed: () {},
+            onPressed: () => context.push('/users/add'),
           ),
           const SizedBox(width: 8),
         ],

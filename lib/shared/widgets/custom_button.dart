@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:heroicons/heroicons.dart';
 
 enum ButtonVariant { primary, secondary, outline, ghost }
 
@@ -6,7 +7,7 @@ class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
   final ButtonVariant variant;
-  final IconData? icon;
+  final HeroIcons? icon;
   final bool isLoading;
   final bool isFullWidth;
 
@@ -43,7 +44,7 @@ class CustomButton extends StatelessWidget {
           ),
           const SizedBox(width: 8),
         ] else if (icon != null) ...[
-          Icon(icon, size: 18),
+          HeroIcon(icon!, size: 18),
           const SizedBox(width: 8),
         ],
         Text(
@@ -119,3 +120,4 @@ class CustomButton extends StatelessWidget {
         : button;
   }
 }
+

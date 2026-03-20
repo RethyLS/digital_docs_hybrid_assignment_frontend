@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/models/employee.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
@@ -18,7 +19,7 @@ class EmployeeCard extends StatelessWidget {
     final theme = Theme.of(context);
     
     return CustomCard(
-      onTap: onTap,
+      onTap: onTap ?? () => context.push('/employees/detail', extra: employee),
       child: Row(
         children: [
           CircleAvatar(

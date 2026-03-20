@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/roles/providers/role_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/roles/widgets/role_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
@@ -25,7 +26,7 @@ class _RolesScreenState extends ConsumerState<RolesScreen> {
         actions: [
           IconButton(
             icon: const HeroIcon(HeroIcons.plus, size: 24),
-            onPressed: () {},
+            onPressed: () => context.push('/roles/add'),
           ),
           const SizedBox(width: 8),
         ],
@@ -73,7 +74,7 @@ class _RolesScreenState extends ConsumerState<RolesScreen> {
                     final role = response.data[index];
                     return RoleCard(
                       role: role,
-                      onTap: () {},
+                      onTap: () => context.push('/roles/detail', extra: role),
                     );
                   },
                 );
