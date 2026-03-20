@@ -53,7 +53,7 @@ class SettingsScreen extends ConsumerWidget {
                 icon: HeroIcons.shieldCheck,
                 title: 'Roles & Permissions',
                 subtitle: 'Configure access levels',
-                onTap: () {},
+                onTap: () => context.push('/roles'),
               ),
               _buildSettingItem(
                 context,

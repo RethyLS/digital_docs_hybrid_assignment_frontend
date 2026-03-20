@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/roles/models/permission.dart';
 
 part 'role.g.dart';
 
@@ -10,6 +11,7 @@ class Role {
   final String? description;
   final int? permissionsCount;
   final int? usersCount;
+  final List<Permission>? permissions;
 
   Role({
     required this.id,
@@ -18,6 +20,7 @@ class Role {
     this.description,
     this.permissionsCount,
     this.usersCount,
+    this.permissions,
   });
 
   factory Role.fromJson(Map<String, dynamic> json) => _$RoleFromJson(json);
