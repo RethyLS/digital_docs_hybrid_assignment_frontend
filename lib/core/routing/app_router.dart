@@ -11,6 +11,7 @@ import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screen
 import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screens/about_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screens/appearance_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screens/language_screen.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/users/screens/user_management_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/splash/screens/splash_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -74,6 +75,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/language',
         builder: (context, state) => const LanguageScreen(),
+      ),
+      GoRoute(
+        path: '/users',
+        builder: (context, state) => const UserManagementScreen(),
       ),      StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return MainNavigationScreen(navigationShell: navigationShell);

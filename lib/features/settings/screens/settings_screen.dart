@@ -46,7 +46,7 @@ class SettingsScreen extends ConsumerWidget {
                 icon: HeroIcons.users,
                 title: 'User Management',
                 subtitle: 'Manage staff and permissions',
-                onTap: () {},
+                onTap: () => context.push('/users'),
               ),
               _buildSettingItem(
                 context,
