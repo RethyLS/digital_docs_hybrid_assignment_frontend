@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/auth/auth_provider.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/users/providers/user_profile_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/skeleton.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -19,7 +21,7 @@ class SettingsScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
-            _buildUserHeader(context),
+            _buildUserHeader(context, ref),
             const SizedBox(height: 24),
             _buildSectionHeader(context, 'Account'),
             _buildSettingsGroup(context, [
@@ -114,49 +116,112 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildUserHeader(BuildContext context) {
+  Widget _buildUserHeader(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final userProfileAsync = ref.watch(userProfileProvider);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: CustomCard(
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-              child: Text(
-                'AD',
-                style: TextStyle(
-                  color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
+        child: userProfileAsync.when(
+          data: (user) => Row(
+            children: [
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
+                backgroundImage: user.image != null && user.image!.isNotEmpty 
+                    ? NetworkImage(user.image!) 
+                    : null,
+                child: user.image == null || user.image!.isEmpty
+                    ? Text(
+                        _getInitials(user.fullName),
+                        style: TextStyle(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      )
+                    : null,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      user.fullName,
+                      style: theme.textTheme.titleLarge?.copyWith(fontSize: 18),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      user.email ?? 'No Email',
+                      style: theme.textTheme.bodyMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Admin User',
-                    style: theme.textTheme.titleLarge?.copyWith(fontSize: 18),
-                  ),
-                  Text(
-                    'admin@example.com',
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                ],
+              IconButton(
+                icon: const HeroIcon(HeroIcons.pencilSquare, size: 20),
+                onPressed: () {},
               ),
-            ),
-            IconButton(
-              icon: const HeroIcon(HeroIcons.pencilSquare, size: 20),
-              onPressed: () {},
-            ),
-          ],
+            ],
+          ),
+          loading: () => Row(
+            children: [
+              const Skeleton(width: 60, height: 60, borderRadius: 30),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Skeleton(width: 150, height: 18, margin: EdgeInsets.only(bottom: 8)),
+                    Skeleton(width: 100, height: 14),
+                  ],
+                ),
+              ),
+              const Skeleton(width: 20, height: 20, borderRadius: 4),
+            ],
+          ),
+          error: (_, __) => Row(
+            children: [
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: theme.colorScheme.error.withValues(alpha: 0.1),
+                child: HeroIcon(
+                  HeroIcons.user,
+                  size: 24,
+                  color: theme.colorScheme.error,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Error Loading Profile',
+                      style: theme.textTheme.titleLarge?.copyWith(fontSize: 18),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  String _getInitials(String name) {
+    if (name.isEmpty) return '??';
+    final parts = name.split(' ');
+    if (parts.length > 1) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return parts[0][0].toUpperCase();
   }
 
   Widget _buildSectionHeader(BuildContext context, String title) {
@@ -167,7 +232,7 @@ class SettingsScreen extends ConsumerWidget {
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.bold,
               letterSpacing: 1.2,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
       ),
     );
@@ -182,8 +247,8 @@ class SettingsScreen extends ConsumerWidget {
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.dark 
-                ? Colors.black.withOpacity(0.3) 
-                : Colors.black.withOpacity(0.04),
+                ? Colors.black.withValues(alpha: 0.3) 
+                : Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -197,7 +262,7 @@ class SettingsScreen extends ConsumerWidget {
           itemCount: children.length,
           separatorBuilder: (context, index) => Divider(
             height: 1,
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
           ),
           itemBuilder: (context, index) => children[index],
         ),

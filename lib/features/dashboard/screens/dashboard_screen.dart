@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/dashboard/providers/dashboard_provider.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/users/providers/user_profile_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/skeleton.dart';
 import 'package:intl/intl.dart';
@@ -14,7 +15,8 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final dashboardAsync = ref.watch(dashboardProvider);
-    
+    final userProfileAsync = ref.watch(userProfileProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
@@ -23,13 +25,33 @@ class DashboardScreen extends ConsumerWidget {
             padding: const EdgeInsets.only(right: 16.0),
             child: GestureDetector(
               onTap: () => context.go('/settings'),
-              child: CircleAvatar(
-                radius: 16,
-                backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                child: HeroIcon(
-                  HeroIcons.user,
-                  size: 18,
-                  color: theme.colorScheme.primary,
+              child: userProfileAsync.when(
+                data: (user) => CircleAvatar(
+                  radius: 16,
+                  backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
+                  backgroundImage: user.image != null && user.image!.isNotEmpty 
+                      ? NetworkImage(user.image!) 
+                      : null,
+                  child: user.image == null || user.image!.isEmpty
+                      ? Text(
+                          _getInitials(user.fullName),
+                          style: TextStyle(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        )
+                      : null,
+                ),
+                loading: () => const Skeleton(width: 32, height: 32, borderRadius: 16),
+                error: (_, __) => CircleAvatar(
+                  radius: 16,
+                  backgroundColor: theme.colorScheme.error.withValues(alpha: 0.1),
+                  child: HeroIcon(
+                    HeroIcons.user,
+                    size: 18,
+                    color: theme.colorScheme.error,
+                  ),
                 ),
               ),
             ),
@@ -230,7 +252,7 @@ class DashboardScreen extends ConsumerWidget {
               HeroIcon(
                 icon,
                 size: 20,
-                color: theme.colorScheme.onSurface.withOpacity(0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ],
           ),
@@ -244,5 +266,14 @@ class DashboardScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  String _getInitials(String name) {
+    if (name.isEmpty) return '??';
+    final parts = name.split(' ');
+    if (parts.length > 1) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return parts[0][0].toUpperCase();
   }
 }
