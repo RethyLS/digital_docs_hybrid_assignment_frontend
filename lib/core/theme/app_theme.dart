@@ -46,8 +46,8 @@ class AppTheme {
         backgroundColor: surfaceLight,
         foregroundColor: textPrimaryLight,
         elevation: 0,
-        scrolledUnderElevation: 0.5,
-        shadowColor: Colors.black.withOpacity(0.1),
+        scrolledUnderElevation: 4.0,
+        shadowColor: Colors.black.withValues(alpha: 0.08),
         surfaceTintColor: Colors.transparent,
         centerTitle: true,
         titleTextStyle: GoogleFonts.inter(
@@ -141,8 +141,8 @@ class AppTheme {
         backgroundColor: surfaceDark,
         foregroundColor: textPrimaryDark,
         elevation: 0,
-        scrolledUnderElevation: 0.5,
-        shadowColor: Colors.black.withOpacity(0.3),
+        scrolledUnderElevation: 4.0,
+        shadowColor: Colors.black.withValues(alpha: 0.3),
         surfaceTintColor: Colors.transparent,
         centerTitle: true,
         titleTextStyle: GoogleFonts.inter(

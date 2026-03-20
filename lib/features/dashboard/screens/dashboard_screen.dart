@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/dashboard/providers/dashboard_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
+import 'package:intl/intl.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final dashboardAsync = ref.watch(dashboardProvider);
     
     return Scaffold(
       appBar: AppBar(
@@ -31,91 +35,110 @@ class DashboardScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Overview',
-              style: theme.textTheme.titleLarge,
-            ),
-            const SizedBox(height: 16),
-            GridView.count(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: 1.5,
-              children: [
-                _buildMetricCard(
-                  context, 
-                  'Total Employees', 
-                  '124', 
-                  HeroIcons.users,
-                  onTap: () => context.go('/employees'),
-                ),
-                _buildMetricCard(
-                  context, 
-                  'Active Documents', 
-                  '45', 
-                  HeroIcons.documentText,
-                  onTap: () => context.go('/documents'),
-                ),
-                _buildMetricCard(
-                  context, 
-                  'Pending Approvals', 
-                  '8', 
-                  HeroIcons.clock,
-                  onTap: () => context.go('/documents'),
-                ),
-                _buildMetricCard(
-                  context, 
-                  'Departments', 
-                  '12', 
-                  HeroIcons.buildingOffice2,
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Recent Activities',
-              style: theme.textTheme.titleLarge,
-            ),
-            const SizedBox(height: 16),
-            CustomCard(
-              padding: EdgeInsets.zero,
-              child: ListView.separated(
+      body: dashboardAsync.when(
+        data: (data) => SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Overview',
+                style: theme.textTheme.titleLarge,
+              ),
+              const SizedBox(height: 16),
+              GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: 5,
-                separatorBuilder: (context, index) => const Divider(),
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                      child: HeroIcon(
-                        HeroIcons.checkBadge,
-                        color: theme.colorScheme.primary,
-                        size: 20,
+                childAspectRatio: 1.5,
+                children: [
+                  _buildMetricCard(
+                    context, 
+                    'Total Employees', 
+                    data.totalEmployees.toString(), 
+                    HeroIcons.users,
+                    onTap: () => context.go('/employees'),
+                  ),
+                  _buildMetricCard(
+                    context, 
+                    'Total Documents', 
+                    data.totalDocuments.toString(), 
+                    HeroIcons.documentText,
+                    onTap: () => context.go('/documents'),
+                  ),
+                  _buildMetricCard(
+                    context, 
+                    'Total Users', 
+                    data.totalUsers.toString(), 
+                    HeroIcons.userGroup,
+                    onTap: () => context.go('/settings'),
+                  ),
+                  _buildMetricCard(
+                    context, 
+                    'Departments', 
+                    'N/A', 
+                    HeroIcons.buildingOffice2,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Recent Activities',
+                style: theme.textTheme.titleLarge,
+              ),
+              const SizedBox(height: 16),
+              if (data.recentDocuments.isEmpty)
+                CustomCard(
+                  child: Center(
+                    child: Text(
+                      'No recent activities',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.5),
                       ),
                     ),
-                    title: Text(
-                      'Document Approved',
-                      style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
-                    ),
-                    subtitle: const Text('Employee Handbook v2.0'),
-                    trailing: Text(
-                      '2h ago',
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    onTap: () => context.go('/documents'),
-                  );
-                },
-              ),
-            ),
-          ],
+                  ),
+                )
+              else
+                CustomCard(
+                  padding: EdgeInsets.zero,
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: data.recentDocuments.length,
+                    separatorBuilder: (context, index) => const Divider(),
+                    itemBuilder: (context, index) {
+                      final doc = data.recentDocuments[index];
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+                          child: HeroIcon(
+                            HeroIcons.documentCheck,
+                            color: theme.colorScheme.primary,
+                            size: 20,
+                          ),
+                        ),
+                        title: Text(
+                          doc.title ?? 'Untitled',
+                          style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+                        ),
+                        subtitle: Text(doc.documentCode ?? 'NO-CODE'),
+                        trailing: Text(
+                          DateFormat('MMM dd, yyyy').format(doc.createdAt),
+                          style: theme.textTheme.bodySmall,
+                        ),
+                        onTap: () => context.go('/documents'),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Text('Failed to load dashboard:\n$error', textAlign: TextAlign.center),
         ),
       ),
     );

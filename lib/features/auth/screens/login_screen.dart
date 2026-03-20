@@ -27,14 +27,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter both email and password.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
     
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 2));
-    
-    if (mounted) {
-      ref.read(authProvider.notifier).login();
-      setState(() => _isLoading = false);
+    try {
+      await ref.read(authProvider.notifier).login(
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
+      // The router will automatically handle the redirect to dashboard
+      // because authProvider state changes to true.
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 

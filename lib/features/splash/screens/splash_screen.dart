@@ -33,8 +33,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with SingleTickerPr
     // Fade In
     await _controller.forward();
     
-    // Hold for 1 second
-    await Future.delayed(const Duration(seconds: 1));
+    // Hold for 1 second and initialize auth state in the background
+    await Future.wait([
+      Future.delayed(const Duration(seconds: 1)),
+      ref.read(authProvider.notifier).initialize(),
+    ]);
     
     // Fade Out
     await _controller.reverse();

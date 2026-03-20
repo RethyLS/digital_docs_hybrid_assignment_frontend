@@ -94,6 +94,7 @@ class DocumentCard extends StatelessWidget {
   Widget _buildInfoItem(BuildContext context, HeroIcons icon, String text) {
     final theme = Theme.of(context);
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         HeroIcon(
           icon,
@@ -101,9 +102,13 @@ class DocumentCard extends StatelessWidget {
           color: theme.colorScheme.onSurface.withOpacity(0.5),
         ),
         const SizedBox(width: 4),
-        Text(
-          text,
-          style: theme.textTheme.bodySmall,
+        Expanded(
+          child: Text(
+            text,
+            style: theme.textTheme.bodySmall,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          ),
         ),
       ],
     );
