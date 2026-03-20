@@ -4,6 +4,7 @@ import 'package:heroicons/heroicons.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/documents/providers/document_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/documents/widgets/document_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/skeleton.dart';
 
 class DocumentsScreen extends ConsumerStatefulWidget {
   const DocumentsScreen({super.key});
@@ -100,7 +101,45 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
                       },
                     );
                   },
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () => ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    itemCount: 5,
+                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      return CustomCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Skeleton(width: 40, height: 40, borderRadius: 8),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: const [
+                                      Skeleton(width: double.infinity, height: 16, margin: EdgeInsets.only(bottom: 4)),
+                                      Skeleton(width: 100, height: 12),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                const Skeleton(width: 60, height: 20, borderRadius: 12),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: const [
+                                Skeleton(width: 80, height: 12),
+                                SizedBox(width: 16),
+                                Skeleton(width: 80, height: 12),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                   error: (error, stack) => Center(
                     child: Text('Failed to load documents:\n$error', textAlign: TextAlign.center),
                   ),

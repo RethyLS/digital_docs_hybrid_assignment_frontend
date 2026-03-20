@@ -4,6 +4,7 @@ import 'package:heroicons/heroicons.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/providers/employee_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/widgets/employee_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/skeleton.dart';
 
 class EmployeesScreen extends ConsumerStatefulWidget {
   const EmployeesScreen({super.key});
@@ -100,7 +101,31 @@ class _EmployeesScreenState extends ConsumerState<EmployeesScreen> {
                       },
                     );
                   },
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () => ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    itemCount: 5,
+                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      return CustomCard(
+                        child: Row(
+                          children: [
+                            const Skeleton(width: 48, height: 48, borderRadius: 24),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Skeleton(width: double.infinity, height: 16, margin: EdgeInsets.only(bottom: 4)),
+                                  Skeleton(width: 100, height: 12, margin: EdgeInsets.only(bottom: 4)),
+                                  Skeleton(width: 150, height: 12),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                   error: (error, stack) => Center(
                     child: Text('Failed to load employees:\n$error', textAlign: TextAlign.center),
                   ),

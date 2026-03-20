@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/dashboard/providers/dashboard_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/skeleton.dart';
 import 'package:intl/intl.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -136,7 +137,45 @@ class DashboardScreen extends ConsumerWidget {
             ],
           ),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Skeleton(width: 100, height: 24),
+              const SizedBox(height: 16),
+              GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                childAspectRatio: 1.5,
+                children: List.generate(4, (index) => const Skeleton(borderRadius: 12)),
+              ),
+              const SizedBox(height: 24),
+              const Skeleton(width: 150, height: 24),
+              const SizedBox(height: 16),
+              CustomCard(
+                padding: EdgeInsets.zero,
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: 5,
+                  separatorBuilder: (context, index) => const Divider(),
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: const Skeleton(width: 40, height: 40, borderRadius: 20),
+                      title: const Skeleton(width: double.infinity, height: 16, margin: EdgeInsets.only(bottom: 8)),
+                      subtitle: const Skeleton(width: 100, height: 12),
+                      trailing: const Skeleton(width: 50, height: 12),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
         error: (error, stack) => Center(
           child: Text('Failed to load dashboard:\n$error', textAlign: TextAlign.center),
         ),
