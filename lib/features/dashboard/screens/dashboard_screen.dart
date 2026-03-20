@@ -151,7 +151,23 @@ class DashboardScreen extends ConsumerWidget {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 childAspectRatio: 1.5,
-                children: List.generate(4, (index) => const Skeleton(borderRadius: 12)),
+                children: List.generate(4, (index) => CustomCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Skeleton(width: 80, height: 12),
+                          Skeleton(width: 16, height: 16, borderRadius: 4),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      const Skeleton(width: 40, height: 24),
+                    ],
+                  ),
+                )),
               ),
               const SizedBox(height: 24),
               const Skeleton(width: 150, height: 24),

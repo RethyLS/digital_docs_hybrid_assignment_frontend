@@ -67,18 +67,12 @@ class _EmployeesScreenState extends ConsumerState<EmployeesScreen> {
                             _isFilterExpanded = !_isFilterExpanded;
                           });
                         },
-                        child: Container(
-                          margin: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: _isFilterExpanded 
-                                ? theme.colorScheme.primary 
-                                : theme.colorScheme.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
                           child: HeroIcon(
-                            HeroIcons.funnel,
-                            size: 18,
-                            color: _isFilterExpanded ? Colors.white : theme.colorScheme.primary,
+                            HeroIcons.adjustmentsHorizontal,
+                            size: 20,
+                            color: _isFilterExpanded ? theme.colorScheme.primary : null,
                           ),
                         ),
                       ),
