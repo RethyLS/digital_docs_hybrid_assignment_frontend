@@ -5,7 +5,9 @@ import 'package:hybrid_digital_docs_assignment_frontend/core/auth/auth_provider.
 import 'package:hybrid_digital_docs_assignment_frontend/features/auth/screens/login_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/dashboard/screens/dashboard_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/documents/screens/documents_screen.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/documents/screens/document_detail_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/documents/screens/upload_document_screen.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/documents/models/document.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/screens/employees_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/screens/employee_detail_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/screens/employee_form_screen.dart';
@@ -159,9 +161,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'upload',
                     builder: (context, state) => const UploadDocumentScreen(),
                   ),
+                  GoRoute(
+                    path: 'detail',
+                    builder: (context, state) {
+                      final document = state.extra as Document;
+                      return DocumentDetailScreen(document: document);
+                    },
+                  ),
                 ],
-              ),
-            ],
+              ),            ],
           ),
           StatefulShellBranch(
             navigatorKey: _employeesNavigatorKey,

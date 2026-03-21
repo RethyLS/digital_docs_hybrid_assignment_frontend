@@ -100,15 +100,33 @@ class DocumentRepository {
     }
   }
 
-  Future<String> downloadDocument(String url, String fileName) async {
+  Future<String> downloadDocument(int id, String fileName) async {
     try {
       final directory = await getApplicationDocumentsDirectory();
       final filePath = '${directory.path}/$fileName';
       
-      await _dio.download(url, filePath);
+      await _dio.download(
+        '/documents/$id/download', 
+        filePath,
+        options: Options(
+          receiveTimeout: const Duration(minutes: 5),
+        ),
+      );
       return filePath;
     } catch (e) {
+      if (e is DioException) {
+         throw Exception(e.response?.data['message'] ?? e.message);
+      }
       throw Exception('Failed to download document: $e');
+    }
+  }
+
+  Future<bool> deleteDocument(int id) async {
+    try {
+      final response = await _dio.delete('/documents/$id');
+      return response.statusCode == 200 || response.statusCode == 204;
+    } catch (e) {
+      throw Exception('Failed to delete document: $e');
     }
   }
 }

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/utils/image_utils.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/documents/models/document.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/documents/repositories/document_repository.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:open_filex/open_filex.dart';
 
 class DocumentCard extends ConsumerStatefulWidget {
   final Document document;
@@ -46,27 +48,26 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
   }
 
   Future<void> _handleDownload() async {
-    if (widget.document.fileUrl == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Document URL is missing')),
-      );
-      return;
-    }
-
     setState(() => _isDownloading = true);
 
     try {
       final repo = ref.read(documentRepositoryProvider);
-      final url = getFullImageUrl(widget.document.fileUrl);
       final fileName = widget.document.fileName ?? 'document_${widget.document.id}';
       
-      final filePath = await repo.downloadDocument(url, fileName);
+      final filePath = await repo.downloadDocument(widget.document.id, fileName);
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Downloaded to $filePath'),
             backgroundColor: Colors.green,
+            action: SnackBarAction(
+              label: 'Open',
+              textColor: Colors.white,
+              onPressed: () {
+                OpenFilex.open(filePath);
+              },
+            ),
           ),
         );
       }
@@ -92,7 +93,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
     final document = widget.document;
     
     return CustomCard(
-      onTap: widget.onTap ?? _handleView,
+      onTap: widget.onTap ?? () => context.push('/documents/detail', extra: document),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
