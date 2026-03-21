@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/documents/providers/document_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/documents/repositories/document_repository.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/models/branch.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/models/category.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/models/document_prefix.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_button.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_text_field.dart';
@@ -22,6 +25,36 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
   String? _filePath;
   String? _fileName;
   bool _isLoading = false;
+
+  List<Branch> _branches = [];
+  List<Category> _categories = [];
+  List<DocumentPrefix> _prefixes = [];
+  
+  int? _selectedBranchId;
+  int? _selectedCategoryId;
+  int? _selectedPrefixId;
+  String _selectedStatus = 'published';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFormData();
+  }
+
+  Future<void> _loadFormData() async {
+    final repo = ref.read(documentRepositoryProvider);
+    final branches = await repo.getBranches();
+    final categories = await repo.getCategories();
+    final prefixes = await repo.getDocumentPrefixes();
+    
+    if (mounted) {
+      setState(() {
+        _branches = branches;
+        _categories = categories;
+        _prefixes = prefixes;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -55,9 +88,9 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
       return;
     }
 
-    if (_titleController.text.isEmpty) {
+    if (_selectedBranchId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a title')),
+        const SnackBar(content: Text('Please select a branch')),
       );
       return;
     }
@@ -68,9 +101,12 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
       final repo = ref.read(documentRepositoryProvider);
       final success = await repo.uploadDocument(
         filePath: _filePath!,
-        title: _titleController.text.trim(),
+        title: _titleController.text.isNotEmpty ? _titleController.text.trim() : null,
         description: _descriptionController.text.trim(),
-        status: 'active', // Default status
+        branchId: _selectedBranchId,
+        categoryId: _selectedCategoryId,
+        prefixId: _selectedPrefixId,
+        status: _selectedStatus,
       );
 
       if (success && mounted) {
@@ -178,10 +214,143 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
                   // Form Fields
                   CustomTextField(
                     label: 'Title',
-                    hintText: 'Enter document title',
+                    hintText: 'Enter document title (optional)',
                     controller: _titleController,
                   ),
                   const SizedBox(height: 16),
+                  
+                  // Prefix Dropdown
+                  Text(
+                    'Document Prefix',
+                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: theme.inputDecorationTheme.fillColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<int>(
+                        isExpanded: true,
+                        hint: const Text('Select a Prefix (Optional)'),
+                        value: _selectedPrefixId,
+                        items: _prefixes.map((DocumentPrefix prefix) {
+                          return DropdownMenuItem<int>(
+                            value: prefix.id,
+                            child: Text(prefix.name ?? 'Unknown'),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedPrefixId = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Branch Dropdown
+                  Text(
+                    'Branch *',
+                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: theme.inputDecorationTheme.fillColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<int>(
+                        isExpanded: true,
+                        hint: const Text('Select a Branch'),
+                        value: _selectedBranchId,
+                        items: _branches.map((Branch branch) {
+                          return DropdownMenuItem<int>(
+                            value: branch.id,
+                            child: Text(branch.name ?? 'Unknown'),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedBranchId = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Category Dropdown
+                  Text(
+                    'Category',
+                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: theme.inputDecorationTheme.fillColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<int>(
+                        isExpanded: true,
+                        hint: const Text('Select a Category (Optional)'),
+                        value: _selectedCategoryId,
+                        items: _categories.map((Category category) {
+                          return DropdownMenuItem<int>(
+                            value: category.id,
+                            child: Text(category.name ?? 'Unknown'),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedCategoryId = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Status Dropdown
+                  Text(
+                    'Status',
+                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: theme.inputDecorationTheme.fillColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        value: _selectedStatus,
+                        items: const [
+                          DropdownMenuItem(value: 'published', child: Text('Published')),
+                          DropdownMenuItem(value: 'draft', child: Text('Draft')),
+                          DropdownMenuItem(value: 'archived', child: Text('Archived')),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _selectedStatus = value;
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
                   CustomTextField(
                     label: 'Description',
                     hintText: 'Enter document description (optional)',
@@ -204,3 +373,4 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
     );
   }
 }
+

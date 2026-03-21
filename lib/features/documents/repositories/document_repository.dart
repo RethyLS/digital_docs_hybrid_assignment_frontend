@@ -2,6 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/api/api_client.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/documents/models/document_response.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/models/branch.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/models/category.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/models/document_prefix.dart';
 import 'package:path_provider/path_provider.dart';
 
 final documentRepositoryProvider = Provider<DocumentRepository>((ref) {
@@ -25,20 +28,55 @@ class DocumentRepository {
     }
   }
 
+  Future<List<Branch>> getBranches() async {
+    try {
+      final response = await _dio.get('/branches');
+      final data = response.data['data'] as List;
+      return data.map((json) => Branch.fromJson(json)).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<List<Category>> getCategories() async {
+    try {
+      final response = await _dio.get('/document-categories');
+      final data = response.data['data'] as List;
+      return data.map((json) => Category.fromJson(json)).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<List<DocumentPrefix>> getDocumentPrefixes() async {
+    try {
+      // Assuming a generic endpoint to fetch all active prefixes for a dropdown
+      final response = await _dio.get('/document-prefixes', queryParameters: {
+        'per_page': 100, // Large number to get all for the dropdown
+      });
+      final data = response.data['data'] as List;
+      return data.map((json) => DocumentPrefix.fromJson(json)).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
   Future<bool> uploadDocument({
     required String filePath,
     String? title,
     String? description,
     int? categoryId,
     int? branchId,
+    int? prefixId,
     String? status,
   }) async {
     try {
       final formData = FormData.fromMap({
         if (title != null) 'title': title,
         if (description != null) 'description': description,
-        if (categoryId != null) 'category_id': categoryId,
+        if (categoryId != null) 'document_category_id': categoryId,
         if (branchId != null) 'branch_id': branchId,
+        if (prefixId != null) 'document_prefix_id': prefixId,
         if (status != null) 'status': status,
         'file': await MultipartFile.fromFile(filePath),
       });
@@ -55,6 +93,9 @@ class DocumentRepository {
       
       return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
+      if (e is DioException) {
+         throw Exception(e.response?.data['message'] ?? e.message);
+      }
       throw Exception('Failed to upload document: $e');
     }
   }
@@ -71,4 +112,6 @@ class DocumentRepository {
     }
   }
 }
+
+
 
