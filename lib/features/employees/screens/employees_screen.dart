@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/providers/employee_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/widgets/employee_card.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/models/branch.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/models/department.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/skeleton.dart';
 
@@ -16,13 +18,31 @@ class EmployeesScreen extends ConsumerStatefulWidget {
 
 class _EmployeesScreenState extends ConsumerState<EmployeesScreen> {
   bool _isFilterExpanded = false;
-  String _selectedDepartment = 'All Departments';
-  String _selectedBranch = 'All Branches';
+  int? _selectedDepartment;
+  int? _selectedBranch;
+  final _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize local state from providers
+    _selectedDepartment = ref.read(employeeDepartmentFilterProvider);
+    _selectedBranch = ref.read(employeeBranchFilterProvider);
+    _searchController.text = ref.read(employeeSearchQueryProvider);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final employeesAsync = ref.watch(employeesProvider);
+    final departmentsAsync = ref.watch(employeeDepartmentsProvider);
+    final branchesAsync = ref.watch(employeeBranchesProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -55,6 +75,10 @@ class _EmployeesScreenState extends ConsumerState<EmployeesScreen> {
                     ],
                   ),
                   child: TextField(
+                    controller: _searchController,
+                    onChanged: (val) {
+                      ref.read(employeeSearchQueryProvider.notifier).updateQuery(val);
+                    },
                     decoration: InputDecoration(
                       hintText: 'Search employees...',
                       fillColor: Colors.transparent,
@@ -132,7 +156,7 @@ class _EmployeesScreenState extends ConsumerState<EmployeesScreen> {
           // Expandable Filter Dropdown Overlay
           if (_isFilterExpanded)
             Positioned(
-              top: 76, // Positioned right below the search bar
+              top: 76,
               left: 16,
               right: 16,
               child: Material(
@@ -148,21 +172,17 @@ class _EmployeesScreenState extends ConsumerState<EmployeesScreen> {
                       ),
                       const SizedBox(height: 16),
                       // Department Filter
-                      _buildDropdown(
-                        theme,
-                        label: 'Department',
-                        value: _selectedDepartment,
-                        items: ['All Departments', 'IT Department', 'Human Resources', 'Design'],
-                        onChanged: (val) => setState(() => _selectedDepartment = val!),
+                      departmentsAsync.when(
+                        data: (departments) => _buildDepartmentDropdown(theme, departments),
+                        loading: () => const Center(child: CircularProgressIndicator()),
+                        error: (_, __) => const Text('Error loading departments'),
                       ),
                       const SizedBox(height: 16),
                       // Branch Filter
-                      _buildDropdown(
-                        theme,
-                        label: 'Branch',
-                        value: _selectedBranch,
-                        items: ['All Branches', 'Main Office', 'Development Center'],
-                        onChanged: (val) => setState(() => _selectedBranch = val!),
+                      branchesAsync.when(
+                        data: (branches) => _buildBranchDropdown(theme, branches),
+                        loading: () => const Center(child: CircularProgressIndicator()),
+                        error: (_, __) => const Text('Error loading branches'),
                       ),
                       const SizedBox(height: 24),
                       Row(
@@ -171,10 +191,12 @@ class _EmployeesScreenState extends ConsumerState<EmployeesScreen> {
                           TextButton(
                             onPressed: () {
                               setState(() {
-                                _selectedDepartment = 'All Departments';
-                                _selectedBranch = 'All Branches';
+                                _selectedDepartment = null;
+                                _selectedBranch = null;
                                 _isFilterExpanded = false;
                               });
+                              ref.read(employeeDepartmentFilterProvider.notifier).updateDepartment(null);
+                              ref.read(employeeBranchFilterProvider.notifier).updateBranch(null);
                             },
                             child: const Text('Reset'),
                           ),
@@ -184,6 +206,8 @@ class _EmployeesScreenState extends ConsumerState<EmployeesScreen> {
                               setState(() {
                                 _isFilterExpanded = false;
                               });
+                              ref.read(employeeDepartmentFilterProvider.notifier).updateDepartment(_selectedDepartment);
+                              ref.read(employeeBranchFilterProvider.notifier).updateBranch(_selectedBranch);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: theme.colorScheme.primary,
@@ -207,12 +231,12 @@ class _EmployeesScreenState extends ConsumerState<EmployeesScreen> {
     );
   }
 
-  Widget _buildDropdown(ThemeData theme, {required String label, required String value, required List<String> items, required void Function(String?) onChanged}) {
+  Widget _buildDepartmentDropdown(ThemeData theme, List<Department> departments) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label,
+          'Department',
           style: theme.textTheme.labelSmall?.copyWith(
             color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
@@ -225,17 +249,67 @@ class _EmployeesScreenState extends ConsumerState<EmployeesScreen> {
             borderRadius: BorderRadius.circular(8),
           ),
           child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
+            child: DropdownButton<int?>(
               isExpanded: true,
-              value: value,
+              value: _selectedDepartment,
+              hint: const Text('All Departments'),
               icon: HeroIcon(HeroIcons.chevronDown, size: 16, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
-              items: items.map((String item) {
-                return DropdownMenuItem<String>(
-                  value: item,
-                  child: Text(item, style: theme.textTheme.bodyMedium),
-                );
-              }).toList(),
-              onChanged: onChanged,
+              items: [
+                DropdownMenuItem<int?>(
+                  value: null,
+                  child: Text('All Departments', style: theme.textTheme.bodyMedium),
+                ),
+                ...departments.map((Department dept) {
+                  return DropdownMenuItem<int?>(
+                    value: dept.id,
+                    child: Text(dept.name ?? 'Unknown', style: theme.textTheme.bodyMedium),
+                  );
+                }),
+              ],
+              onChanged: (val) => setState(() => _selectedDepartment = val),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBranchDropdown(ThemeData theme, List<Branch> branches) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Branch',
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: theme.inputDecorationTheme.fillColor,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<int?>(
+              isExpanded: true,
+              value: _selectedBranch,
+              hint: const Text('All Branches'),
+              icon: HeroIcon(HeroIcons.chevronDown, size: 16, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+              items: [
+                DropdownMenuItem<int?>(
+                  value: null,
+                  child: Text('All Branches', style: theme.textTheme.bodyMedium),
+                ),
+                ...branches.map((Branch branch) {
+                  return DropdownMenuItem<int?>(
+                    value: branch.id,
+                    child: Text(branch.name ?? 'Unknown', style: theme.textTheme.bodyMedium),
+                  );
+                }),
+              ],
+              onChanged: (val) => setState(() => _selectedBranch = val),
             ),
           ),
         ),

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/api/api_client.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/models/employee_response.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/models/employee.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/models/branch.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/models/department.dart';
 
 final employeeRepositoryProvider = Provider<EmployeeRepository>((ref) {
   return EmployeeRepository(ref.watch(dioProvider));
@@ -13,15 +15,44 @@ class EmployeeRepository {
 
   EmployeeRepository(this._dio);
 
-  Future<EmployeeResponse> getEmployees({int page = 1, int perPage = 15}) async {
+  Future<EmployeeResponse> getEmployees({
+    int page = 1, 
+    int perPage = 15,
+    String? search,
+    int? departmentId,
+    int? branchId,
+  }) async {
     try {
       final response = await _dio.get('/employees', queryParameters: {
         'page': page,
         'per_page': perPage,
+        if (search != null && search.isNotEmpty) 'search': search,
+        if (departmentId != null) 'department_id': departmentId,
+        if (branchId != null) 'branch_id': branchId,
       });
       return EmployeeResponse.fromJson(response.data);
     } catch (e) {
       throw Exception('Failed to load employees: $e');
+    }
+  }
+
+  Future<List<Branch>> getBranches() async {
+    try {
+      final response = await _dio.get('/branches');
+      final data = response.data['data'] as List;
+      return data.map((json) => Branch.fromJson(json)).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<List<Department>> getDepartments() async {
+    try {
+      final response = await _dio.get('/departments');
+      final data = response.data['data'] as List;
+      return data.map((json) => Department.fromJson(json)).toList();
+    } catch (e) {
+      return [];
     }
   }
 
