@@ -21,6 +21,7 @@ class _EmployeesScreenState extends ConsumerState<EmployeesScreen> {
   int? _selectedDepartment;
   int? _selectedBranch;
   final _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -29,12 +30,21 @@ class _EmployeesScreenState extends ConsumerState<EmployeesScreen> {
     _selectedDepartment = ref.read(employeeDepartmentFilterProvider);
     _selectedBranch = ref.read(employeeBranchFilterProvider);
     _searchController.text = ref.read(employeeSearchQueryProvider);
+    
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      ref.read(employeesProvider.notifier).loadMore();
+    }
   }
 
   @override
@@ -107,16 +117,23 @@ class _EmployeesScreenState extends ConsumerState<EmployeesScreen> {
               ),
               Expanded(
                 child: employeesAsync.when(
-                  data: (response) {
-                    if (response.data.isEmpty) {
+                  data: (paginatedState) {
+                    if (paginatedState.employees.isEmpty) {
                       return const Center(child: Text('No employees found.'));
                     }
                     return ListView.separated(
+                      controller: _scrollController,
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      itemCount: response.data.length,
+                      itemCount: paginatedState.employees.length + (paginatedState.hasMore ? 1 : 0),
                       separatorBuilder: (context, index) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
-                        return EmployeeCard(employee: response.data[index]);
+                        if (index == paginatedState.employees.length) {
+                          return const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
+                        return EmployeeCard(employee: paginatedState.employees[index]);
                       },
                     );
                   },

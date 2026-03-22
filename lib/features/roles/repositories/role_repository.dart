@@ -13,11 +13,12 @@ class RoleRepository {
 
   RoleRepository(this._dio);
 
-  Future<RoleListResponse> getRoles({int page = 1, int perPage = 15}) async {
+  Future<RoleListResponse> getRoles({int page = 1, int perPage = 15, String? search}) async {
     try {
       final response = await _dio.get('/roles', queryParameters: {
         'page': page,
         'per_page': perPage,
+        if (search != null && search.isNotEmpty) 'search': search,
       });
       return RoleListResponse.fromJson(response.data);
     } catch (e) {

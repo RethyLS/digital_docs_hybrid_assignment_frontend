@@ -20,6 +20,7 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
   String _selectedStatus = 'All Statuses';
   int? _selectedCategory;
   final _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -28,12 +29,21 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
     _selectedStatus = ref.read(documentStatusFilterProvider);
     _selectedCategory = ref.read(documentCategoryFilterProvider);
     _searchController.text = ref.read(documentSearchQueryProvider);
+    
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      ref.read(documentsProvider.notifier).loadMore();
+    }
   }
 
   @override
@@ -105,16 +115,23 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
               ),
               Expanded(
                 child: documentsAsync.when(
-                  data: (response) {
-                    if (response.data.isEmpty) {
+                  data: (paginatedState) {
+                    if (paginatedState.documents.isEmpty) {
                       return const Center(child: Text('No documents found.'));
                     }
                     return ListView.separated(
+                      controller: _scrollController,
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      itemCount: response.data.length,
+                      itemCount: paginatedState.documents.length + (paginatedState.hasMore ? 1 : 0),
                       separatorBuilder: (context, index) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
-                        return DocumentCard(document: response.data[index]);
+                        if (index == paginatedState.documents.length) {
+                          return const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
+                        return DocumentCard(document: paginatedState.documents[index]);
                       },
                     );
                   },

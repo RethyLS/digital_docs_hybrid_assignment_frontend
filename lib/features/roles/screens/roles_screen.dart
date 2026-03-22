@@ -15,6 +15,29 @@ class RolesScreen extends ConsumerStatefulWidget {
 }
 
 class _RolesScreenState extends ConsumerState<RolesScreen> {
+  final _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.text = ref.read(roleSearchQueryProvider);
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      ref.read(rolesProvider.notifier).loadMore();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -33,7 +56,7 @@ class _RolesScreenState extends ConsumerState<RolesScreen> {
       ),
       body: Column(
         children: [
-          // Search Bar (simplified for roles)
+          // Search Bar
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Container(
@@ -49,6 +72,10 @@ class _RolesScreenState extends ConsumerState<RolesScreen> {
                 ],
               ),
               child: TextField(
+                controller: _searchController,
+                onChanged: (val) {
+                  ref.read(roleSearchQueryProvider.notifier).updateQuery(val);
+                },
                 decoration: InputDecoration(
                   hintText: 'Search roles...',
                   fillColor: Colors.transparent,
@@ -62,16 +89,23 @@ class _RolesScreenState extends ConsumerState<RolesScreen> {
           ),
           Expanded(
             child: rolesAsync.when(
-              data: (response) {
-                if (response.data.isEmpty) {
+              data: (paginatedState) {
+                if (paginatedState.roles.isEmpty) {
                   return const Center(child: Text('No roles found.'));
                 }
                 return ListView.separated(
+                  controller: _scrollController,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  itemCount: response.data.length,
+                  itemCount: paginatedState.roles.length + (paginatedState.hasMore ? 1 : 0),
                   separatorBuilder: (context, index) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
-                    final role = response.data[index];
+                    if (index == paginatedState.roles.length) {
+                      return const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+                    final role = paginatedState.roles[index];
                     return RoleCard(
                       role: role,
                       onTap: () => context.push('/roles/detail', extra: role),

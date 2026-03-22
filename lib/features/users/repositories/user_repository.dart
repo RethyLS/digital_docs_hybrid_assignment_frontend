@@ -13,11 +13,20 @@ class UserRepository {
 
   UserRepository(this._dio);
 
-  Future<UserListResponse> getUsers({int page = 1, int perPage = 15}) async {
+  Future<UserListResponse> getUsers({
+    int page = 1,
+    int perPage = 15,
+    String? searchQuery,
+    String? statusFilter,
+    String? roleFilter,
+  }) async {
     try {
       final response = await _dio.get('/users', queryParameters: {
         'page': page,
         'per_page': perPage,
+        if (searchQuery != null && searchQuery.isNotEmpty) 'search': searchQuery,
+        if (statusFilter != null && statusFilter.isNotEmpty) 'status': statusFilter,
+        if (roleFilter != null && roleFilter.isNotEmpty) 'role': roleFilter,
       });
       return UserListResponse.fromJson(response.data);
     } catch (e) {
