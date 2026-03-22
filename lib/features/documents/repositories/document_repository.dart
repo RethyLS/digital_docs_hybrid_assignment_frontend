@@ -17,11 +17,20 @@ class DocumentRepository {
 
   DocumentRepository(this._dio);
 
-  Future<DocumentResponse> getDocuments({int page = 1, int perPage = 15}) async {
+  Future<DocumentResponse> getDocuments({
+    int page = 1, 
+    int perPage = 15,
+    String? search,
+    String? status,
+    int? categoryId,
+  }) async {
     try {
       final response = await _dio.get('/documents', queryParameters: {
         'page': page,
         'per_page': perPage,
+        if (search != null && search.isNotEmpty) 'search': search,
+        if (status != null && status.isNotEmpty) 'status': status,
+        if (categoryId != null) 'category_id': categoryId,
       });
       return DocumentResponse.fromJson(response.data);
     } catch (e) {
