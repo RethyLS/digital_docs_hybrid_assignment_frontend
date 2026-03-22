@@ -59,10 +59,9 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
 
     try {
       final repo = ref.read(documentRepositoryProvider);
-      final url = getFullImageUrl(widget.document.fileUrl);
       final fileName = widget.document.fileName ?? 'document_${widget.document.id}.pdf';
       
-      final filePath = await repo.downloadDocument(url, fileName);
+      final filePath = await repo.downloadDocument(widget.document.id, fileName);
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

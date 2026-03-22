@@ -101,35 +101,36 @@ class DocumentRepository {
     }
   }
 
-  Future<String> downloadDocument(String url, String fileName) async {
+  Future<String> downloadDocument(int id, String fileName) async {
     try {
       final directory = await getTemporaryDirectory();
-      // Ensure the file name is clean to prevent path issues
       final safeFileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
       final filePath = '${directory.path}/$safeFileName';
-      
-      final response = await _dio.get<List<int>>(
-        url, 
+
+      // Use a standard GET request to pull the file into memory, 
+      // then write to disk. This avoids the HTTPConnection closed 
+      // stream error on the Android emulator talking to php artisan serve.
+      final response = await _dio.get(
+        '/documents/$id/download',
         options: Options(
-          responseType: ResponseType.bytes,
-          receiveTimeout: const Duration(minutes: 5),
-          validateStatus: (status) => status != null && status < 500, // Handle non-200 gracefully
+          responseType: ResponseType.bytes, 
+          followRedirects: false,
+          validateStatus: (status) => status != null && status < 500,
         ),
       );
-      
-      if (response.statusCode != 200 && response.statusCode != 201) {
-         throw Exception('Server returned error: ${response.statusCode}');
+
+      if (response.statusCode == 404) {
+        throw Exception('Server returned error: File not found (404).');
+      } else if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Server returned error: ${response.statusCode}');
       }
-      
+
       final file = File(filePath);
-      await file.writeAsBytes(response.data!);
-      
+      await file.writeAsBytes(response.data as List<int>);
+
       return filePath;
     } on DioException catch (e) {
-      if (e.response != null) {
-        throw Exception('Server returned error: ${e.response?.statusCode}.');
-      }
-      throw Exception('Download failed: ${e.type} - ${e.message} - ${e.error}');
+      throw Exception('Download failed: ${e.message}');
     } catch (e) {
       throw Exception('Unexpected error: $e');
     }
