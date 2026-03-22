@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/api/api_client.dart';
@@ -100,26 +101,37 @@ class DocumentRepository {
     }
   }
 
-  Future<String> downloadDocument(int id, String fileName) async {
+  Future<String> downloadDocument(String url, String fileName) async {
     try {
       final directory = await getTemporaryDirectory();
       // Ensure the file name is clean to prevent path issues
       final safeFileName = fileName.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
       final filePath = '${directory.path}/$safeFileName';
       
-      await _dio.download(
-        '/documents/$id/download', 
-        filePath,
+      final response = await _dio.get<List<int>>(
+        url, 
+        options: Options(
+          responseType: ResponseType.bytes,
+          receiveTimeout: const Duration(minutes: 5),
+          validateStatus: (status) => status != null && status < 500, // Handle non-200 gracefully
+        ),
       );
+      
+      if (response.statusCode != 200 && response.statusCode != 201) {
+         throw Exception('Server returned error: ${response.statusCode}');
+      }
+      
+      final file = File(filePath);
+      await file.writeAsBytes(response.data!);
       
       return filePath;
     } on DioException catch (e) {
       if (e.response != null) {
-        throw Exception('Server returned error: ${e.response?.statusCode}. Please check if the file exists.');
+        throw Exception('Server returned error: ${e.response?.statusCode}.');
       }
-      throw Exception(e.message ?? 'Network error occurred during download.');
+      throw Exception('Download failed: ${e.type} - ${e.message} - ${e.error}');
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception('Unexpected error: $e');
     }
   }
 

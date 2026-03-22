@@ -48,13 +48,21 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
   }
 
   Future<void> _handleDownload() async {
+    if (widget.document.fileUrl == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Document URL is missing')),
+      );
+      return;
+    }
+
     setState(() => _isDownloading = true);
 
     try {
       final repo = ref.read(documentRepositoryProvider);
+      final url = getFullImageUrl(widget.document.fileUrl);
       final fileName = widget.document.fileName ?? 'document_${widget.document.id}.pdf';
       
-      final filePath = await repo.downloadDocument(widget.document.id, fileName);
+      final filePath = await repo.downloadDocument(url, fileName);
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
