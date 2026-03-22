@@ -21,7 +21,7 @@ final dashboardProvider = FutureProvider.autoDispose<DashboardData>((ref) async 
   return DashboardData(
     totalDocuments: documentsResponse.meta?.total ?? 0,
     totalEmployees: employeesResponse.meta?.total ?? 0,
-    totalUsers: usersResponse.meta?.total ?? 0,
+    totalUsers: usersResponse.meta?.total ?? 0,                                                                                   
     recentDocuments: documentsResponse.data,
   );
 });

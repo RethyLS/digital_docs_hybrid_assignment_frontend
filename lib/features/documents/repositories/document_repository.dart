@@ -102,7 +102,7 @@ class DocumentRepository {
 
   Future<String> downloadDocument(int id, String fileName) async {
     try {
-      final directory = await getApplicationDocumentsDirectory();
+      final directory = await getTemporaryDirectory();
       final filePath = '${directory.path}/$fileName';
       
       await _dio.download(
@@ -110,14 +110,20 @@ class DocumentRepository {
         filePath,
         options: Options(
           receiveTimeout: const Duration(minutes: 5),
+          validateStatus: (status) => status != null && status >= 200 && status < 300,
         ),
       );
+      
       return filePath;
-    } catch (e) {
-      if (e is DioException) {
-         throw Exception(e.response?.data['message'] ?? e.message);
+    } on DioException catch (e) {
+      if (e.response != null) {
+        // If the backend returned a 404 or 500, Dio saved it to the file since it's a download.
+        // We shouldn't try to parse it as a JSON map directly from e.response.data because it's a ResponseBody stream.
+        throw Exception('Server returned error: ${e.response?.statusCode}. Please check if the file exists.');
       }
-      throw Exception('Failed to download document: $e');
+      throw Exception(e.message ?? 'Network error occurred during download.');
+    } catch (e) {
+      throw Exception(e.toString());
     }
   }
 

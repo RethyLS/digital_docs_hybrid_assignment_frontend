@@ -52,7 +52,7 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
 
     try {
       final repo = ref.read(documentRepositoryProvider);
-      final fileName = widget.document.fileName ?? 'document_${widget.document.id}';
+      final fileName = widget.document.fileName ?? 'document_${widget.document.id}.pdf';
       
       final filePath = await repo.downloadDocument(widget.document.id, fileName);
       
@@ -64,8 +64,23 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
             action: SnackBarAction(
               label: 'Open',
               textColor: Colors.white,
-              onPressed: () {
-                OpenFilex.open(filePath);
+              onPressed: () async {
+                try {
+                  final result = await OpenFilex.open(filePath);
+                  if (result.type != ResultType.done) {
+                    if (mounted) {
+                       ScaffoldMessenger.of(context).showSnackBar(
+                         SnackBar(content: Text('Could not open file: ${result.message}')),
+                       );
+                    }
+                  }
+                } catch (e) {
+                   if (mounted) {
+                       ScaffoldMessenger.of(context).showSnackBar(
+                         SnackBar(content: Text('Could not open file: $e')),
+                       );
+                    }
+                }
               },
             ),
           ),

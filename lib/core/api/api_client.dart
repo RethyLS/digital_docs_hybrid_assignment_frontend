@@ -32,12 +32,28 @@ final dioProvider = Provider<Dio>((ref) {
         if (token != null) {
           options.headers['Authorization'] = 'Bearer $token';
         }
+        
+        // Log request manually to avoid stream issues
+        if (kDebugMode) {
+          print('--> ${options.method.toUpperCase()} ${options.baseUrl}${options.path}');
+        }
+        
         return handler.next(options);
+      },
+      onResponse: (response, handler) {
+        if (kDebugMode) {
+          print('<-- ${response.statusCode} ${response.requestOptions.baseUrl}${response.requestOptions.path}');
+        }
+        return handler.next(response);
+      },
+      onError: (DioException e, handler) {
+        if (kDebugMode) {
+          print('<-- Error ${e.message}');
+        }
+        return handler.next(e);
       },
     ),
   );
-
-  dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
 
   return dio;
 });
