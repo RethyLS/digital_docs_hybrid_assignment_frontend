@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
@@ -5,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/models/employee.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/providers/employee_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/repositories/employee_repository.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/models/branch.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/models/department.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_button.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_text_field.dart';
@@ -27,6 +30,8 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
   late TextEditingController _positionController;
   late TextEditingController _employeeCodeController;
 
+  int? _selectedBranchId;
+  int? _selectedDepartmentId;
   bool _isLoading = false;
 
   @override
@@ -37,7 +42,19 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
     _emailController = TextEditingController(text: widget.employee?.email);
     _phoneController = TextEditingController(text: widget.employee?.phone);
     _positionController = TextEditingController(text: widget.employee?.position);
-    _employeeCodeController = TextEditingController(text: widget.employee?.employeeCode);
+
+    // Auto-generate employee code if new
+    final code = widget.employee?.employeeCode ?? _generateEmployeeCode();
+    _employeeCodeController = TextEditingController(text: code);
+
+    _selectedBranchId = widget.employee?.branchId;
+    _selectedDepartmentId = widget.employee?.departmentId;
+  }
+
+  String _generateEmployeeCode() {
+    final rand = Random().nextInt(99999).toString().padLeft(5, '0');
+    final year = DateTime.now().year;
+    return 'EMP$year-$rand';
   }
 
   @override
@@ -54,6 +71,13 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
 
+    if (_selectedBranchId == null) {
+       ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a Branch'), backgroundColor: Colors.redAccent),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     final employee = Employee(
@@ -65,7 +89,9 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
       position: _positionController.text.trim(),
       employeeCode: _employeeCodeController.text.trim(),
       status: widget.employee?.status ?? 'active',
-      organizationId: widget.employee?.organizationId ?? 1, // Defaulting for now
+      branchId: _selectedBranchId,
+      departmentId: _selectedDepartmentId,
+      organizationId: widget.employee?.organizationId ?? 1,
     );
 
     try {
@@ -109,6 +135,9 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
     final theme = Theme.of(context);
     final isEditing = widget.employee != null;
 
+    final branchesAsync = ref.watch(employeeBranchesProvider);
+    final departmentsAsync = ref.watch(employeeDepartmentsProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditing ? 'Edit Employee' : 'Add Employee'),
@@ -126,52 +155,176 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
                   style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                CustomTextField(
-                  label: 'Employee Code',
-                  controller: _employeeCodeController,
-                  validator: (value) => value == null || value.isEmpty ? 'Required' : null,
+
+                // Code Input with Auto Generate
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: CustomTextField(
+                        label: 'Employee Code *',
+                        controller: _employeeCodeController,
+                        validator: (value) => value == null || value.isEmpty ? 'Required' : null,
+                      ),
+                    ),
+                    if (!isEditing) ...[
+                      const SizedBox(width: 8),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 24.0),
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _employeeCodeController.text = _generateEmployeeCode();
+                            });
+                          },
+                          icon: const HeroIcon(HeroIcons.arrowPath),
+                          tooltip: 'Generate Code',
+                        ),
+                      ),
+                    ]
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextField(
+                        label: 'First Name *',
+                        controller: _firstNameController,
+                        validator: (value) => value == null || value.isEmpty ? 'Required' : null,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: CustomTextField(
+                        label: 'Last Name *',
+                        controller: _lastNameController,
+                        validator: (value) => value == null || value.isEmpty ? 'Required' : null,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 CustomTextField(
-                  label: 'First Name',
-                  controller: _firstNameController,
-                  validator: (value) => value == null || value.isEmpty ? 'Required' : null,
-                ),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  label: 'Last Name',
-                  controller: _lastNameController,
-                  validator: (value) => value == null || value.isEmpty ? 'Required' : null,
-                ),
-                const SizedBox(height: 16),
-                CustomTextField(
-                  label: 'Email',
+                  label: 'Email *',
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Required';
-                    if (!value.contains('@')) return 'Invalid email';
-                    return null;
+                     if (value == null || value.isEmpty) return 'Required';
+                     if (!value.contains('@')) return 'Invalid email format';
+                     return null;
                   },
                 ),
                 const SizedBox(height: 16),
                 CustomTextField(
-                  label: 'Phone Number',
+                  label: 'Phone (Optional)',
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
                 ),
                 const SizedBox(height: 16),
                 CustomTextField(
-                  label: 'Position',
+                  label: 'Position (Optional)',
                   controller: _positionController,
-                  validator: (value) => value == null || value.isEmpty ? 'Required' : null,
+                ),
+                const SizedBox(height: 16),
+
+                // Branch Dropdown (Required)
+                Text(
+                  'Branch *',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: theme.inputDecorationTheme.fillColor,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: _selectedBranchId == null ? theme.colorScheme.error : Colors.transparent,
+                      width: _selectedBranchId == null ? 1 : 0,
+                    ),
+                  ),
+                  child: branchesAsync.when(
+                    data: (branches) => DropdownButtonHideUnderline(
+                      child: DropdownButton<int?>(
+                        isExpanded: true,
+                        value: _selectedBranchId,
+                        hint: const Text('Select a Branch'),
+                        icon: HeroIcon(HeroIcons.chevronDown, size: 16, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                        items: branches.map((Branch branch) {
+                          return DropdownMenuItem<int?>(
+                            value: branch.id,
+                            child: Text(branch.name ?? 'Unknown', style: theme.textTheme.bodyMedium),
+                          );
+                        }).toList(),
+                        onChanged: (val) => setState(() => _selectedBranchId = val),
+                      ),
+                    ),
+                    loading: () => const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 14.0),
+                      child: Text('Loading branches...'),
+                    ),
+                    error: (_, __) => const Text('Error loading branches'),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Department Dropdown (Optional)
+                Text(
+                  'Department (Optional)',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: theme.inputDecorationTheme.fillColor,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: departmentsAsync.when(
+                    data: (departments) => DropdownButtonHideUnderline(
+                      child: DropdownButton<int?>(
+                        isExpanded: true,
+                        value: _selectedDepartmentId,
+                        hint: const Text('Select a Department'),
+                        icon: HeroIcon(HeroIcons.chevronDown, size: 16, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                        items: [
+                          DropdownMenuItem<int?>(
+                            value: null,
+                            child: Text('None', style: theme.textTheme.bodyMedium),
+                          ),
+                          ...departments.map((Department dept) {
+                            return DropdownMenuItem<int?>(
+                              value: dept.id,
+                              child: Text(dept.name ?? 'Unknown', style: theme.textTheme.bodyMedium),
+                            );
+                          }),
+                        ],
+                        onChanged: (val) => setState(() => _selectedDepartmentId = val),
+                      ),
+                    ),
+                    loading: () => const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 14.0),
+                      child: Text('Loading departments...'),
+                    ),
+                    error: (_, __) => const Text('Error loading departments'),
+                  ),
                 ),
                 const SizedBox(height: 32),
-                CustomButton(
-                  text: isEditing ? 'Update Employee' : 'Save Employee',
-                  onPressed: _submitForm,
-                  isLoading: _isLoading,
-                  icon: isEditing ? HeroIcons.check : HeroIcons.plus,
+
+                // Submit Button
+                SizedBox(
+                  width: double.infinity,
+                  child: CustomButton(
+                    onPressed: _isLoading ? () {} : _submitForm,
+                    text: isEditing ? 'Update Employee' : 'Save Employee',
+                    isLoading: _isLoading,
+                  ),
                 ),
               ],
             ),
