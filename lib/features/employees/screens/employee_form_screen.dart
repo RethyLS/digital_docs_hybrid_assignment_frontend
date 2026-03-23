@@ -52,9 +52,10 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
   }
 
   String _generateEmployeeCode() {
-    final rand = Random().nextInt(99999).toString().padLeft(5, '0');
+    final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+    final suffix = timestamp.substring(timestamp.length - 6);
     final year = DateTime.now().year;
-    return 'EMP$year-$rand';
+    return 'EMP$year-$suffix';
   }
 
   @override
@@ -80,13 +81,16 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
 
     setState(() => _isLoading = true);
 
+    final phoneText = _phoneController.text.trim();
+    final positionText = _positionController.text.trim();
+
     final employee = Employee(
       id: widget.employee?.id ?? 0,
       firstName: _firstNameController.text.trim(),
       lastName: _lastNameController.text.trim(),
       email: _emailController.text.trim(),
-      phone: _phoneController.text.trim(),
-      position: _positionController.text.trim(),
+      phone: phoneText.isEmpty ? null : phoneText,
+      position: positionText.isEmpty ? null : positionText,
       employeeCode: _employeeCodeController.text.trim(),
       status: widget.employee?.status ?? 'active',
       branchId: _selectedBranchId,
@@ -248,21 +252,27 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
                     ),
                   ),
                   child: branchesAsync.when(
-                    data: (branches) => DropdownButtonHideUnderline(
-                      child: DropdownButton<int?>(
-                        isExpanded: true,
-                        value: _selectedBranchId,
-                        hint: const Text('Select a Branch'),
-                        icon: HeroIcon(HeroIcons.chevronDown, size: 16, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
-                        items: branches.map((Branch branch) {
-                          return DropdownMenuItem<int?>(
-                            value: branch.id,
-                            child: Text(branch.name ?? 'Unknown', style: theme.textTheme.bodyMedium),
-                          );
-                        }).toList(),
-                        onChanged: (val) => setState(() => _selectedBranchId = val),
-                      ),
-                    ),
+                    data: (branches) {
+                      // Ensure selected branch exists in the list to prevent DropdownButton crash
+                      final branchExists = branches.any((b) => b.id == _selectedBranchId);
+                      final effectiveBranchId = branchExists ? _selectedBranchId : null;
+
+                      return DropdownButtonHideUnderline(
+                        child: DropdownButton<int?>(
+                          isExpanded: true,
+                          value: effectiveBranchId,
+                          hint: const Text('Select a Branch'),
+                          icon: HeroIcon(HeroIcons.chevronDown, size: 16, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                          items: branches.map((Branch branch) {
+                            return DropdownMenuItem<int?>(
+                              value: branch.id,
+                              child: Text(branch.name ?? 'Unknown', style: theme.textTheme.bodyMedium),
+                            );
+                          }).toList(),
+                          onChanged: (val) => setState(() => _selectedBranchId = val),
+                        ),
+                      );
+                    },
                     loading: () => const Padding(
                       padding: EdgeInsets.symmetric(vertical: 14.0),
                       child: Text('Loading branches...'),
@@ -287,27 +297,33 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: departmentsAsync.when(
-                    data: (departments) => DropdownButtonHideUnderline(
-                      child: DropdownButton<int?>(
-                        isExpanded: true,
-                        value: _selectedDepartmentId,
-                        hint: const Text('Select a Department'),
-                        icon: HeroIcon(HeroIcons.chevronDown, size: 16, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
-                        items: [
-                          DropdownMenuItem<int?>(
-                            value: null,
-                            child: Text('None', style: theme.textTheme.bodyMedium),
-                          ),
-                          ...departments.map((Department dept) {
-                            return DropdownMenuItem<int?>(
-                              value: dept.id,
-                              child: Text(dept.name ?? 'Unknown', style: theme.textTheme.bodyMedium),
-                            );
-                          }),
-                        ],
-                        onChanged: (val) => setState(() => _selectedDepartmentId = val),
-                      ),
-                    ),
+                    data: (departments) {
+                      // Ensure selected department exists in the list
+                      final deptExists = departments.any((d) => d.id == _selectedDepartmentId);
+                      final effectiveDeptId = deptExists ? _selectedDepartmentId : null;
+
+                      return DropdownButtonHideUnderline(
+                        child: DropdownButton<int?>(
+                          isExpanded: true,
+                          value: effectiveDeptId,
+                          hint: const Text('Select a Department'),
+                          icon: HeroIcon(HeroIcons.chevronDown, size: 16, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                          items: [
+                            DropdownMenuItem<int?>(
+                              value: null,
+                              child: Text('None', style: theme.textTheme.bodyMedium),
+                            ),
+                            ...departments.map((Department dept) {
+                              return DropdownMenuItem<int?>(
+                                value: dept.id,
+                                child: Text(dept.name ?? 'Unknown', style: theme.textTheme.bodyMedium),
+                              );
+                            }),
+                          ],
+                          onChanged: (val) => setState(() => _selectedDepartmentId = val),
+                        ),
+                      );
+                    },
                     loading: () => const Padding(
                       padding: EdgeInsets.symmetric(vertical: 14.0),
                       child: Text('Loading departments...'),

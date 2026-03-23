@@ -38,7 +38,7 @@ class EmployeeRepository {
 
   Future<List<Branch>> getBranches() async {
     try {
-      final response = await _dio.get('/branches');
+      final response = await _dio.get('/branches', queryParameters: {'per_page': 100});
       final data = response.data['data'] as List;
       return data.map((json) => Branch.fromJson(json)).toList();
     } catch (e) {
@@ -48,7 +48,7 @@ class EmployeeRepository {
 
   Future<List<Department>> getDepartments() async {
     try {
-      final response = await _dio.get('/departments');
+      final response = await _dio.get('/departments', queryParameters: {'per_page': 100});
       final data = response.data['data'] as List;
       return data.map((json) => Department.fromJson(json)).toList();
     } catch (e) {
@@ -60,6 +60,21 @@ class EmployeeRepository {
     try {
       final response = await _dio.post('/employees', data: employee.toJson());
       return response.statusCode == 200 || response.statusCode == 201;
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.data != null) {
+        final data = e.response?.data;
+        if (data is Map) {
+          if (data.containsKey('errors')) {
+            final errors = data['errors'] as Map<String, dynamic>;
+            final firstError = errors.values.first[0];
+            throw Exception(firstError.toString());
+          }
+          if (data.containsKey('message')) {
+            throw Exception(data['message']);
+          }
+        }
+      }
+      throw Exception('Failed to create employee: ${e.message}');
     } catch (e) {
       throw Exception('Failed to create employee: $e');
     }
@@ -69,6 +84,21 @@ class EmployeeRepository {
     try {
       final response = await _dio.put('/employees/$id', data: employee.toJson());
       return response.statusCode == 200 || response.statusCode == 204;
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.data != null) {
+        final data = e.response?.data;
+        if (data is Map) {
+          if (data.containsKey('errors')) {
+            final errors = data['errors'] as Map<String, dynamic>;
+            final firstError = errors.values.first[0];
+            throw Exception(firstError.toString());
+          }
+          if (data.containsKey('message')) {
+            throw Exception(data['message']);
+          }
+        }
+      }
+      throw Exception('Failed to update employee: ${e.message}');
     } catch (e) {
       throw Exception('Failed to update employee: $e');
     }
