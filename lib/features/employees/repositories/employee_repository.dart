@@ -108,6 +108,14 @@ class EmployeeRepository {
     try {
       final response = await _dio.delete('/employees/$id');
       return response.statusCode == 200 || response.statusCode == 204;
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.data != null) {
+        final data = e.response?.data;
+        if (data is Map && data.containsKey('message')) {
+          throw Exception(data['message']);
+        }
+      }
+      throw Exception('Failed to delete employee: ${e.message}');
     } catch (e) {
       throw Exception('Failed to delete employee: $e');
     }

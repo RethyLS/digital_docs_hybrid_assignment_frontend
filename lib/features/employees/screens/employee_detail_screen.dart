@@ -53,7 +53,7 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          context.pop();
+          context.go('/employees');
         }
       } catch (e) {
         if (mounted) {

@@ -1,8 +1,8 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/models/employee.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/providers/employee_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/repositories/employee_repository.dart';
@@ -32,6 +32,7 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
 
   int? _selectedBranchId;
   int? _selectedDepartmentId;
+  DateTime? _selectedJoinDate;
   bool _isLoading = false;
 
   @override
@@ -49,6 +50,12 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
 
     _selectedBranchId = widget.employee?.branchId;
     _selectedDepartmentId = widget.employee?.departmentId;
+    
+    if (widget.employee?.joinDate != null) {
+      _selectedJoinDate = DateTime.tryParse(widget.employee!.joinDate!);
+    } else if (widget.employee == null) {
+      _selectedJoinDate = DateTime.now(); // Default to today for new employees
+    }
   }
 
   String _generateEmployeeCode() {
@@ -69,12 +76,33 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
     super.dispose();
   }
 
+  Future<void> _selectJoinDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedJoinDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedJoinDate) {
+      setState(() {
+        _selectedJoinDate = picked;
+      });
+    }
+  }
+
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedBranchId == null) {
-       ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select a Branch'), backgroundColor: Colors.redAccent),
+      );
+      return;
+    }
+
+    if (_selectedJoinDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a Join Date'), backgroundColor: Colors.redAccent),
       );
       return;
     }
@@ -95,6 +123,7 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
       status: widget.employee?.status ?? 'active',
       branchId: _selectedBranchId,
       departmentId: _selectedDepartmentId,
+      joinDate: DateFormat('yyyy-MM-dd').format(_selectedJoinDate!),
       organizationId: widget.employee?.organizationId ?? 1,
     );
 
@@ -116,7 +145,7 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        context.pop();
+        context.go('/employees');
       }
     } catch (e) {
       if (mounted) {
@@ -215,12 +244,45 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
-                     if (value == null || value.isEmpty) return 'Required';
-                     if (!value.contains('@')) return 'Invalid email format';
-                     return null;
+                    if (value == null || value.isEmpty) return 'Required';
+                    if (!value.contains('@')) return 'Invalid email format';
+                    return null;
                   },
                 ),
                 const SizedBox(height: 16),
+                
+                // Join Date Picker
+                Text(
+                  'Join Date *',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                InkWell(
+                  onTap: _selectJoinDate,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                    decoration: BoxDecoration(
+                      color: theme.inputDecorationTheme.fillColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _selectedJoinDate == null
+                              ? 'Select Date'
+                              : DateFormat('MMM dd, yyyy').format(_selectedJoinDate!),
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        HeroIcon(HeroIcons.calendar, size: 20, color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                
                 CustomTextField(
                   label: 'Phone (Optional)',
                   controller: _phoneController,
@@ -253,7 +315,6 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
                   ),
                   child: branchesAsync.when(
                     data: (branches) {
-                      // Ensure selected branch exists in the list to prevent DropdownButton crash
                       final branchExists = branches.any((b) => b.id == _selectedBranchId);
                       final effectiveBranchId = branchExists ? _selectedBranchId : null;
 
@@ -298,7 +359,6 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
                   ),
                   child: departmentsAsync.when(
                     data: (departments) {
-                      // Ensure selected department exists in the list
                       final deptExists = departments.any((d) => d.id == _selectedDepartmentId);
                       final effectiveDeptId = deptExists ? _selectedDepartmentId : null;
 
