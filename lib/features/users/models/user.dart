@@ -12,6 +12,7 @@ class User {
   final String? image;
   final String? email;
   final String? phone;
+  final String? bio;
   final String? status;
   final Organization? organization;
   final List<Role>? roles;
@@ -23,6 +24,7 @@ class User {
     this.image,
     this.email,
     this.phone,
+    this.bio,
     this.status,
     this.organization,
     this.roles,

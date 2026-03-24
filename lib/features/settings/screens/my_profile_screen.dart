@@ -22,9 +22,11 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
   late TextEditingController _lastNameController;
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
+  late TextEditingController _bioController;
   
   bool _isLoading = false;
   bool _isAvatarUploading = false;
+  bool _hasInitialized = false;
 
   @override
   void initState() {
@@ -33,17 +35,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
     _lastNameController = TextEditingController();
     _emailController = TextEditingController();
     _phoneController = TextEditingController();
-
-    // Populate with current data if available
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final user = ref.read(userProfileProvider).value;
-      if (user != null) {
-        _firstNameController.text = user.firstName ?? '';
-        _lastNameController.text = user.lastName ?? '';
-        _emailController.text = user.email ?? '';
-        _phoneController.text = user.phone ?? '';
-      }
-    });
+    _bioController = TextEditingController();
   }
 
   @override
@@ -52,7 +44,18 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
     _lastNameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
+    _bioController.dispose();
     super.dispose();
+  }
+
+  void _initializeControllers(dynamic user) {
+    if (_hasInitialized || user == null) return;
+    _firstNameController.text = user.firstName ?? '';
+    _lastNameController.text = user.lastName ?? '';
+    _emailController.text = user.email ?? '';
+    _phoneController.text = user.phone ?? '';
+    _bioController.text = user.bio ?? '';
+    _hasInitialized = true;
   }
 
   Future<void> _pickAndUploadAvatar() async {
@@ -105,6 +108,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
       'last_name': _lastNameController.text.trim(),
       'email': _emailController.text.trim(),
       'phone': _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
+      'bio': _bioController.text.trim().isEmpty ? null : _bioController.text.trim(),
     };
 
     try {
@@ -144,6 +148,9 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final userAsync = ref.watch(userProfileProvider);
+
+    // Initialize controllers once data is available
+    userAsync.whenData(_initializeControllers);
 
     return Scaffold(
       appBar: AppBar(
@@ -252,6 +259,12 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                           label: 'Phone (Optional)',
                           controller: _phoneController,
                           keyboardType: TextInputType.phone,
+                        ),
+                        const SizedBox(height: 16),
+                        CustomTextField(
+                          label: 'Bio (Optional)',
+                          controller: _bioController,
+                          maxLines: 3,
                         ),
                         const SizedBox(height: 32),
                         SizedBox(

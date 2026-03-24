@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/users/models/user.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/users/providers/user_profile_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_button.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
@@ -26,7 +27,7 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
     super.dispose();
   }
 
-  Future<void> _submitForm(int userId) async {
+  Future<void> _submitForm(User user) async {
     if (!_formKey.currentState!.validate()) return;
 
     if (_newPasswordController.text != _confirmPasswordController.text) {
@@ -38,13 +39,17 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
 
     setState(() => _isLoading = true);
 
+    // The backend validation requires these fields even when updating just the password
     final payload = {
+      'first_name': user.firstName ?? '',
+      'last_name': user.lastName ?? '',
+      'email': user.email ?? '',
       'password': _newPasswordController.text,
       'password_confirmation': _confirmPasswordController.text,
     };
 
     try {
-      final success = await ref.read(userProfileProvider.notifier).updateProfile(userId, payload);
+      final success = await ref.read(userProfileProvider.notifier).updateProfile(user.id, payload);
       
       if (success && mounted) {
         _newPasswordController.clear();
@@ -119,7 +124,7 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
                       child: CustomButton(
                         text: 'Update Password',
                         isLoading: _isLoading,
-                        onPressed: _isLoading ? () {} : () => _submitForm(user.id),
+                        onPressed: _isLoading ? () {} : () => _submitForm(user),
                       ),
                     ),
                   ],
