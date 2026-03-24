@@ -18,8 +18,16 @@ class UserProfileRepository {
       final response = await _dio.get('/me');
       final data = response.data['data'] ?? response.data;
       return User.fromJson(data);
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.data != null) {
+        final data = e.response?.data;
+        if (data is Map && data.containsKey('message')) {
+          throw Exception(data['message']);
+        }
+      }
+      throw Exception(e.message ?? 'Unknown network error');
     } catch (e) {
-      throw Exception('Failed to load user profile: $e');
+      throw Exception(e.toString());
     }
   }
 
