@@ -36,12 +36,17 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
     }
     
     final url = Uri.parse(getFullImageUrl(widget.document.fileUrl));
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } else {
+    try {
+      final launched = await launchUrl(url, mode: LaunchMode.externalApplication);
+      if (!launched && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open document in external browser')),
+        );
+      }
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open document')),
+          SnackBar(content: Text('Could not open document: $e')),
         );
       }
     }
