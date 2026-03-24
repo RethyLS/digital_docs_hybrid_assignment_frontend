@@ -181,7 +181,7 @@ class SettingsScreen extends ConsumerWidget {
               const Skeleton(width: 20, height: 20, borderRadius: 4),
             ],
           ),
-          error: (_, __) => Row(
+          error: (err, __) => Row(
             children: [
               CircleAvatar(
                 radius: 30,
@@ -200,6 +200,12 @@ class SettingsScreen extends ConsumerWidget {
                     Text(
                       'Error Loading Profile',
                       style: theme.textTheme.titleLarge?.copyWith(fontSize: 18),
+                    ),
+                    Text(
+                      err.toString().replaceAll('Exception: ', ''),
+                      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.error),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
