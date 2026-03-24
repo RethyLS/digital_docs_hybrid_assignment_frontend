@@ -338,7 +338,7 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
                       padding: EdgeInsets.symmetric(vertical: 14.0),
                       child: Text('Loading branches...'),
                     ),
-                    error: (_, __) => const Text('Error loading branches'),
+                    error: (err, __) => Text('Error: $err', style: TextStyle(color: Colors.red)),
                   ),
                 ),
                 const SizedBox(height: 16),

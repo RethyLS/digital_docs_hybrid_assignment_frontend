@@ -42,7 +42,7 @@ class EmployeeRepository {
       final data = response.data['data'] as List;
       return data.map((json) => Branch.fromJson(json)).toList();
     } catch (e) {
-      return [];
+      throw Exception('Failed to load branches: $e');
     }
   }
 
@@ -52,7 +52,7 @@ class EmployeeRepository {
       final data = response.data['data'] as List;
       return data.map((json) => Department.fromJson(json)).toList();
     } catch (e) {
-      return [];
+      throw Exception('Failed to load departments: $e');
     }
   }
 
