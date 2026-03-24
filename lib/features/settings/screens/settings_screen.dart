@@ -160,17 +160,12 @@ class SettingsScreen extends ConsumerWidget {
                       style: theme.textTheme.bodyMedium,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(
-                icon: const HeroIcon(HeroIcons.pencilSquare, size: 20),
-                onPressed: () {},
-              ),
-            ],
-          ),
-          loading: () => Row(
+                      ),
+                      ],
+                      ),
+                      ),
+                      ],
+                      ),          loading: () => Row(
             children: [
               const Skeleton(width: 60, height: 60, borderRadius: 30),
               const SizedBox(width: 16),
