@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/api/api_client.dart';
@@ -15,12 +16,65 @@ class UserProfileRepository {
   Future<User> getUserProfile() async {
     try {
       final response = await _dio.get('/me');
-      // Assuming the backend returns the user object directly, or wrapped in 'data'.
-      // If it's wrapped in 'data', use response.data['data']
       final data = response.data['data'] ?? response.data;
       return User.fromJson(data);
     } catch (e) {
       throw Exception('Failed to load user profile: $e');
+    }
+  }
+
+  Future<User> updateProfile(int userId, Map<String, dynamic> payload) async {
+    try {
+      final response = await _dio.put('/users/$userId', data: payload);
+      final data = response.data['data'] ?? response.data;
+      return User.fromJson(data);
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.data != null) {
+        final data = e.response?.data;
+        if (data is Map) {
+          if (data.containsKey('errors')) {
+            final errors = data['errors'] as Map<String, dynamic>;
+            final firstError = errors.values.first[0];
+            throw Exception(firstError.toString());
+          }
+          if (data.containsKey('message')) {
+            throw Exception(data['message']);
+          }
+        }
+      }
+      throw Exception('Failed to update profile: ${e.message}');
+    } catch (e) {
+      throw Exception('Failed to update profile: $e');
+    }
+  }
+
+  Future<User> updateAvatar(File imageFile) async {
+    try {
+      String fileName = imageFile.path.split('/').last;
+      FormData formData = FormData.fromMap({
+        'avatar': await MultipartFile.fromFile(imageFile.path, filename: fileName),
+      });
+
+      final response = await _dio.post('/me/avatar', data: formData);
+      final data = response.data['data'] ?? response.data;
+      return User.fromJson(data);
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.data != null) {
+        final data = e.response?.data;
+        if (data is Map) {
+          if (data.containsKey('errors')) {
+            final errors = data['errors'] as Map<String, dynamic>;
+            final firstError = errors.values.first[0];
+            throw Exception(firstError.toString());
+          }
+          if (data.containsKey('message')) {
+            throw Exception(data['message']);
+          }
+        }
+      }
+      throw Exception('Failed to update avatar: ${e.message}');
+    } catch (e) {
+      throw Exception('Failed to update avatar: $e');
     }
   }
 }

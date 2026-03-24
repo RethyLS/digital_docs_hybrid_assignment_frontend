@@ -17,6 +17,8 @@ import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screen
 import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screens/about_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screens/appearance_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screens/language_screen.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screens/my_profile_screen.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screens/security_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/users/screens/user_management_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/users/screens/user_form_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/users/screens/user_detail_screen.dart';
@@ -76,6 +78,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/profile',
+        builder: (context, state) => const MyProfileScreen(),
+      ),
+      GoRoute(
+        path: '/security',
+        builder: (context, state) => const SecurityScreen(),
       ),
       GoRoute(
         path: '/about',
