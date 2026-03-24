@@ -40,8 +40,34 @@ class UserRepository {
       if (password != null && password.isNotEmpty) {
         data['password'] = password;
       }
+      
+      // Spatie expects an array of role names, not role objects
+      if (data.containsKey('roles') && data['roles'] != null) {
+        final rolesList = data['roles'] as List;
+        if (rolesList.isNotEmpty && rolesList.first is Map) {
+           data['roles'] = rolesList.map((r) => r['name']).toList();
+        } else if (rolesList.isEmpty) {
+           data.remove('roles');
+        }
+      }
+
       final response = await _dio.post('/users', data: data);
       return response.statusCode == 200 || response.statusCode == 201;
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.data != null) {
+        final data = e.response?.data;
+        if (data is Map) {
+          if (data.containsKey('errors')) {
+            final errors = data['errors'] as Map<String, dynamic>;
+            final firstError = errors.values.first[0];
+            throw Exception(firstError.toString());
+          }
+          if (data.containsKey('message')) {
+            throw Exception(data['message']);
+          }
+        }
+      }
+      throw Exception('Failed to create user: ${e.message}');
     } catch (e) {
       throw Exception('Failed to create user: $e');
     }
@@ -49,8 +75,35 @@ class UserRepository {
 
   Future<bool> updateUser(int id, User user) async {
     try {
-      final response = await _dio.put('/users/$id', data: user.toJson());
+      final data = user.toJson();
+
+      // Spatie expects an array of role names, not role objects
+      if (data.containsKey('roles') && data['roles'] != null) {
+        final rolesList = data['roles'] as List;
+        if (rolesList.isNotEmpty && rolesList.first is Map) {
+           data['roles'] = rolesList.map((r) => r['name']).toList();
+        } else if (rolesList.isEmpty) {
+           data.remove('roles'); // Don't wipe roles if empty array is passed inadvertently
+        }
+      }
+
+      final response = await _dio.put('/users/$id', data: data);
       return response.statusCode == 200 || response.statusCode == 204;
+    } on DioException catch (e) {
+      if (e.response != null && e.response?.data != null) {
+        final data = e.response?.data;
+        if (data is Map) {
+          if (data.containsKey('errors')) {
+            final errors = data['errors'] as Map<String, dynamic>;
+            final firstError = errors.values.first[0];
+            throw Exception(firstError.toString());
+          }
+          if (data.containsKey('message')) {
+            throw Exception(data['message']);
+          }
+        }
+      }
+      throw Exception('Failed to update user: ${e.message}');
     } catch (e) {
       throw Exception('Failed to update user: $e');
     }
