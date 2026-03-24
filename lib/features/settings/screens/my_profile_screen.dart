@@ -56,29 +56,41 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
   }
 
   Future<void> _pickAndUploadAvatar() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
-
-    if (image == null) return;
-
-    setState(() => _isAvatarUploading = true);
-    
     try {
-      final success = await ref.read(userProfileProvider.notifier).updateAvatar(File(image.path));
-      if (success && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Avatar updated successfully'), backgroundColor: Colors.green),
-        );
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
+
+      if (image == null) return;
+
+      setState(() => _isAvatarUploading = true);
+      
+      try {
+        final success = await ref.read(userProfileProvider.notifier).updateAvatar(File(image.path));
+        if (success && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Avatar updated successfully'), backgroundColor: Colors.green),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(e.toString()), backgroundColor: Colors.redAccent),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _isAvatarUploading = false);
+        }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.redAccent),
+          SnackBar(
+            content: Text('Could not open gallery. Did you fully restart the app? Error: $e'), 
+            backgroundColor: Colors.redAccent,
+            duration: const Duration(seconds: 5),
+          ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isAvatarUploading = false);
       }
     }
   }
@@ -173,16 +185,21 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                       Positioned(
                         bottom: 0,
                         right: 0,
-                        child: GestureDetector(
-                          onTap: _isAvatarUploading ? null : _pickAndUploadAvatar,
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primary,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: theme.scaffoldBackgroundColor, width: 2),
+                        child: Material(
+                          color: theme.colorScheme.primary,
+                          shape: const CircleBorder(),
+                          elevation: 4,
+                          child: InkWell(
+                            onTap: _isAvatarUploading ? null : _pickAndUploadAvatar,
+                            customBorder: const CircleBorder(),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: HeroIcon(
+                                HeroIcons.camera, 
+                                size: 18, 
+                                color: theme.colorScheme.onPrimary
+                              ),
                             ),
-                            child: HeroIcon(HeroIcons.camera, size: 16, color: theme.colorScheme.onPrimary),
                           ),
                         ),
                       ),
