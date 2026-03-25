@@ -3,7 +3,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/utils/image_utils.dart';
 
 final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
@@ -14,8 +13,9 @@ final dioProvider = Provider<Dio>((ref) {
   final secureStorage = ref.watch(secureStorageProvider);
 
   final dio = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
+    // Increased timeouts to 30 seconds to handle Laravel slow responses or emulator lag
+    connectTimeout: const Duration(seconds: 30),
+    receiveTimeout: const Duration(seconds: 30),
     headers: {
       'Accept': 'application/json',
     },
@@ -24,15 +24,22 @@ final dioProvider = Provider<Dio>((ref) {
   dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) async {
-        // Resolve the base URL dynamically on the first request
+        // Smart URL Resolver: Automatically figure out the right IP for Emulators vs Physical devices
         if (globalResolvedBaseUrl == null) {
           if (!kIsWeb && Platform.isAndroid) {
-            final androidInfo = await DeviceInfoPlugin().androidInfo;
-            // Emulators use 10.0.2.2, Physical devices use 127.0.0.1 (via adb reverse)
-            globalResolvedBaseUrl = androidInfo.isPhysicalDevice
-                ? 'http://127.0.0.1:8000/api'
-                : 'http://10.0.2.2:8000/api';
+            try {
+              // Quick 2-second ping to 10.0.2.2 (The standard Android Emulator magic IP)
+              final pingDio = Dio(BaseOptions(connectTimeout: const Duration(seconds: 2), receiveTimeout: const Duration(seconds: 2)));
+              await pingDio.head('http://10.0.2.2:8000/api');
+              
+              // If it connects instantly without error, we are on an Emulator
+              globalResolvedBaseUrl = 'http://10.0.2.2:8000/api';
+            } catch (e) {
+              // If it fails (Timeout/Connection Refused), we are on a Physical Device using adb reverse
+              globalResolvedBaseUrl = 'http://127.0.0.1:8000/api';
+            }
           } else {
+            // iOS Simulators, Web, Desktop all use 127.0.0.1
             globalResolvedBaseUrl = 'http://127.0.0.1:8000/api';
           }
         }
