@@ -11,10 +11,9 @@ final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
 final dioProvider = Provider<Dio>((ref) {
   final secureStorage = ref.watch(secureStorageProvider);
   
-  // Use 10.0.2.2 for Android Emulator to connect to local backend, otherwise 127.0.0.1
-  final String baseUrl = !kIsWeb && Platform.isAndroid 
-      ? 'http://10.0.2.2:8000/api'
-      : 'http://127.0.0.1:8000/api';
+  // Since you are using 'adb reverse tcp:8000 tcp:8000', 
+  // 127.0.0.1 will work perfectly for both the physical device and web/desktop.
+  final String baseUrl = 'http://127.0.0.1:8000/api';
 
   final dio = Dio(BaseOptions(
     baseUrl: baseUrl,

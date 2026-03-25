@@ -4,6 +4,8 @@ import 'package:hybrid_digital_docs_assignment_frontend/core/api/api_client.dart
 import 'package:hybrid_digital_docs_assignment_frontend/features/users/models/user_list_response.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/users/models/user.dart';
 
+import 'package:hybrid_digital_docs_assignment_frontend/features/users/models/role.dart';
+
 final userRepositoryProvider = Provider<UserRepository>((ref) {
   return UserRepository(ref.watch(dioProvider));
 });
@@ -44,8 +46,12 @@ class UserRepository {
       // Spatie expects an array of role names, not role objects
       if (data.containsKey('roles') && data['roles'] != null) {
         final rolesList = data['roles'] as List;
-        if (rolesList.isNotEmpty && rolesList.first is Map) {
-           data['roles'] = rolesList.map((r) => r['name']).toList();
+        if (rolesList.isNotEmpty) {
+          if (rolesList.first is Map) {
+            data['roles'] = rolesList.map((r) => (r as Map)['name']).toList();
+          } else if (rolesList.first is Role) {
+            data['roles'] = rolesList.map((r) => (r as Role).name).toList();
+          }
         } else if (rolesList.isEmpty) {
            data.remove('roles');
         }
@@ -80,8 +86,12 @@ class UserRepository {
       // Spatie expects an array of role names, not role objects
       if (data.containsKey('roles') && data['roles'] != null) {
         final rolesList = data['roles'] as List;
-        if (rolesList.isNotEmpty && rolesList.first is Map) {
-           data['roles'] = rolesList.map((r) => r['name']).toList();
+        if (rolesList.isNotEmpty) {
+          if (rolesList.first is Map) {
+            data['roles'] = rolesList.map((r) => (r as Map)['name']).toList();
+          } else if (rolesList.first is Role) {
+            data['roles'] = rolesList.map((r) => (r as Role).name).toList();
+          }
         } else if (rolesList.isEmpty) {
            data.remove('roles'); // Don't wipe roles if empty array is passed inadvertently
         }

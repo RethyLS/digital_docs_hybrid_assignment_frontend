@@ -4,7 +4,7 @@ import 'package:hybrid_digital_docs_assignment_frontend/shared/models/organizati
 
 part 'user.g.dart';
 
-@JsonSerializable(fieldRename: FieldRename.snake)
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class User {
   final int id;
   final String? firstName;
