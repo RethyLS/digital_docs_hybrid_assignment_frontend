@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/core/utils/image_utils.dart';
 
 final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
   return const FlutterSecureStorage();
@@ -10,13 +12,8 @@ final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
 
 final dioProvider = Provider<Dio>((ref) {
   final secureStorage = ref.watch(secureStorageProvider);
-  
-  // Since you are using 'adb reverse tcp:8000 tcp:8000', 
-  // 127.0.0.1 will work perfectly for both the physical device and web/desktop.
-  final String baseUrl = 'http://127.0.0.1:8000/api';
 
   final dio = Dio(BaseOptions(
-    baseUrl: baseUrl,
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
     headers: {
@@ -27,12 +24,26 @@ final dioProvider = Provider<Dio>((ref) {
   dio.interceptors.add(
     InterceptorsWrapper(
       onRequest: (options, handler) async {
+        // Resolve the base URL dynamically on the first request
+        if (globalResolvedBaseUrl == null) {
+          if (!kIsWeb && Platform.isAndroid) {
+            final androidInfo = await DeviceInfoPlugin().androidInfo;
+            // Emulators use 10.0.2.2, Physical devices use 127.0.0.1 (via adb reverse)
+            globalResolvedBaseUrl = androidInfo.isPhysicalDevice
+                ? 'http://127.0.0.1:8000/api'
+                : 'http://10.0.2.2:8000/api';
+          } else {
+            globalResolvedBaseUrl = 'http://127.0.0.1:8000/api';
+          }
+        }
+        
+        options.baseUrl = globalResolvedBaseUrl!;
+
         final token = await secureStorage.read(key: 'auth_token');
         if (token != null) {
           options.headers['Authorization'] = 'Bearer $token';
         }
         
-        // Log request manually to avoid stream issues
         if (kDebugMode) {
           print('--> ${options.method.toUpperCase()} ${options.baseUrl}${options.path}');
         }
