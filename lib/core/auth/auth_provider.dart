@@ -13,8 +13,8 @@ class AuthNotifier extends Notifier<bool> {
   }
 
   Future<void> initialize() async {
-    final secureStorage = ref.read(secureStorageProvider);
-    final token = await secureStorage.read(key: 'auth_token');
+    final sharedPrefs = await ref.read(sharedPrefsProvider.future);
+    final token = sharedPrefs.getString('auth_token');
     if (token != null && token.isNotEmpty) {
       state = true;
     }
@@ -25,8 +25,8 @@ class AuthNotifier extends Notifier<bool> {
       final repository = ref.read(authRepositoryProvider);
       final token = await repository.login(email, password);
       
-      final secureStorage = ref.read(secureStorageProvider);
-      await secureStorage.write(key: 'auth_token', value: token);
+      final sharedPrefs = await ref.read(sharedPrefsProvider.future);
+      await sharedPrefs.setString('auth_token', token);
       
       state = true;
     } catch (e) {
@@ -36,8 +36,8 @@ class AuthNotifier extends Notifier<bool> {
   }
 
   Future<void> logout() async {
-    final secureStorage = ref.read(secureStorageProvider);
-    await secureStorage.delete(key: 'auth_token');
+    final sharedPrefs = await ref.read(sharedPrefsProvider.future);
+    await sharedPrefs.remove('auth_token');
     state = false;
   }
 }

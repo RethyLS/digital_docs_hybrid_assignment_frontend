@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Brand Colors
@@ -36,11 +35,11 @@ class AppTheme {
         onSurface: textPrimaryLight,
         onError: Colors.white,
       ),
-      textTheme: GoogleFonts.interTextTheme().copyWith(
-        displayLarge: GoogleFonts.inter(color: textPrimaryLight, fontWeight: FontWeight.bold),
-        titleLarge: GoogleFonts.inter(color: textPrimaryLight, fontWeight: FontWeight.w600),
-        bodyLarge: GoogleFonts.inter(color: textPrimaryLight),
-        bodyMedium: GoogleFonts.inter(color: textSecondaryLight),
+      textTheme: const TextTheme().copyWith(
+        displayLarge: TextStyle(color: textPrimaryLight, fontWeight: FontWeight.bold),
+        titleLarge: TextStyle(color: textPrimaryLight, fontWeight: FontWeight.w600),
+        bodyLarge: TextStyle(color: textPrimaryLight),
+        bodyMedium: TextStyle(color: textSecondaryLight),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: surfaceLight,
@@ -50,7 +49,7 @@ class AppTheme {
         shadowColor: Colors.black.withValues(alpha: 0.08),
         surfaceTintColor: Colors.transparent,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: TextStyle(
           color: textPrimaryLight,
           fontSize: 18,
           fontWeight: FontWeight.w600,
@@ -68,13 +67,13 @@ class AppTheme {
         }),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return GoogleFonts.inter(
+            return TextStyle(
               color: primaryColor,
               fontWeight: FontWeight.w600,
               fontSize: 12,
             );
           }
-          return GoogleFonts.inter(
+          return TextStyle(
             color: textSecondaryLight,
             fontWeight: FontWeight.w500,
             fontSize: 12,
@@ -106,7 +105,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: primaryColor, width: 1.5),
         ),
-        hintStyle: GoogleFonts.inter(color: textSecondaryLight.withOpacity(0.5)),
+        hintStyle: TextStyle(color: textSecondaryLight.withOpacity(0.5)),
       ),
       dividerTheme: const DividerThemeData(
         color: borderLight,
@@ -131,11 +130,11 @@ class AppTheme {
         onSurface: textPrimaryDark,
         onError: Colors.white,
       ),
-      textTheme: GoogleFonts.interTextTheme().copyWith(
-        displayLarge: GoogleFonts.inter(color: textPrimaryDark, fontWeight: FontWeight.bold),
-        titleLarge: GoogleFonts.inter(color: textPrimaryDark, fontWeight: FontWeight.w600),
-        bodyLarge: GoogleFonts.inter(color: textPrimaryDark),
-        bodyMedium: GoogleFonts.inter(color: textSecondaryDark),
+      textTheme: const TextTheme().copyWith(
+        displayLarge: TextStyle(color: textPrimaryDark, fontWeight: FontWeight.bold),
+        titleLarge: TextStyle(color: textPrimaryDark, fontWeight: FontWeight.w600),
+        bodyLarge: TextStyle(color: textPrimaryDark),
+        bodyMedium: TextStyle(color: textSecondaryDark),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: surfaceDark,
@@ -145,7 +144,7 @@ class AppTheme {
         shadowColor: Colors.black.withValues(alpha: 0.3),
         surfaceTintColor: Colors.transparent,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: TextStyle(
           color: textPrimaryDark,
           fontSize: 18,
           fontWeight: FontWeight.w600,
@@ -163,13 +162,13 @@ class AppTheme {
         }),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return GoogleFonts.inter(
+            return TextStyle(
               color: primaryColor,
               fontWeight: FontWeight.w600,
               fontSize: 12,
             );
           }
-          return GoogleFonts.inter(
+          return TextStyle(
             color: textSecondaryDark,
             fontWeight: FontWeight.w500,
             fontSize: 12,
@@ -201,7 +200,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: primaryColor, width: 1.5),
         ),
-        hintStyle: GoogleFonts.inter(color: textSecondaryDark.withOpacity(0.5)),
+        hintStyle: TextStyle(color: textSecondaryDark.withOpacity(0.5)),
       ),
       dividerTheme: const DividerThemeData(
         color: borderDark,

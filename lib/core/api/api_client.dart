@@ -2,16 +2,16 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/utils/image_utils.dart';
 
-final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
-  return const FlutterSecureStorage();
+final sharedPrefsProvider = FutureProvider<SharedPreferences>((ref) async {
+  return await SharedPreferences.getInstance();
 });
 
 final dioProvider = Provider<Dio>((ref) {
-  final secureStorage = ref.watch(secureStorageProvider);
+  final sharedPrefsAsync = ref.watch(sharedPrefsProvider);
 
   final dio = Dio(BaseOptions(
     // 60-second timeouts to give the single-threaded Laravel server plenty of time
@@ -48,7 +48,8 @@ final dioProvider = Provider<Dio>((ref) {
         
         options.baseUrl = globalResolvedBaseUrl!;
 
-        final token = await secureStorage.read(key: 'auth_token');
+        final sharedPrefs = await ref.read(sharedPrefsProvider.future);
+        final token = sharedPrefs.getString('auth_token');
         if (token != null) {
           options.headers['Authorization'] = 'Bearer $token';
         }
