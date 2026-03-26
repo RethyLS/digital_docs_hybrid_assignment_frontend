@@ -76,11 +76,18 @@ class _RoleFormScreenState extends ConsumerState<RoleFormScreen> {
         ref.invalidate(rolesProvider);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(widget.role == null ? 'Role created successfully' : 'Role updated successfully'),
+            content: Text(isEditing ? 'Role updated successfully' : 'Role created successfully'),
             backgroundColor: Colors.green,
           ),
         );
-        context.pop();
+        if (isEditing) {
+          // Pop Edit, then Pop Detail
+          context.pop();
+          context.pop();
+        } else {
+          // Pop Add
+          context.pop();
+        }
       }
     } catch (e) {
       if (mounted) {
