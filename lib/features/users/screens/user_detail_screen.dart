@@ -54,7 +54,7 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          context.pop();
+          context.go('/users');
         }
       } catch (e) {
         if (mounted) {

@@ -82,7 +82,7 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        context.pop();
+        context.go('/users');
       }
     } catch (e) {
       if (mounted) {
