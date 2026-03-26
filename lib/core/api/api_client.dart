@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/utils/image_utils.dart';
 
 final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
