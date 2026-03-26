@@ -82,7 +82,14 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        context.go('/users');
+        if (widget.user != null) {
+          // If editing, pop the Edit screen, then pop the Detail screen
+          context.pop();
+          context.pop();
+        } else {
+          // If adding, just pop the Add screen
+          context.pop();
+        }
       }
     } catch (e) {
       if (mounted) {
