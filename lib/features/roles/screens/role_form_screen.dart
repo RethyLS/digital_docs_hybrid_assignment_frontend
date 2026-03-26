@@ -21,7 +21,6 @@ class RoleFormScreen extends ConsumerStatefulWidget {
 class _RoleFormScreenState extends ConsumerState<RoleFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
-  late TextEditingController _descriptionController;
 
   bool _isLoading = false;
   final Set<String> _selectedPermissions = {};
@@ -30,7 +29,6 @@ class _RoleFormScreenState extends ConsumerState<RoleFormScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.role?.name);
-    _descriptionController = TextEditingController(text: widget.role?.description);
     
     if (widget.role?.permissions != null) {
       for (var p in widget.role!.permissions!) {
@@ -44,7 +42,6 @@ class _RoleFormScreenState extends ConsumerState<RoleFormScreen> {
   @override
   void dispose() {
     _nameController.dispose();
-    _descriptionController.dispose();
     super.dispose();
   }
 
@@ -52,6 +49,7 @@ class _RoleFormScreenState extends ConsumerState<RoleFormScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
+    final isEditing = widget.role != null;
 
     try {
       final repo = ref.read(roleRepositoryProvider);
@@ -60,14 +58,14 @@ class _RoleFormScreenState extends ConsumerState<RoleFormScreen> {
       if (widget.role == null) {
         success = await repo.createRole(
           _nameController.text.trim(),
-          _descriptionController.text.trim(),
+          null, // No description
           _selectedPermissions.toList(),
         );
       } else {
         success = await repo.updateRole(
           widget.role!.id,
           _nameController.text.trim(),
-          _descriptionController.text.trim(),
+          widget.role!.description, // Preserve existing description if any
           _selectedPermissions.toList(),
         );
       }
@@ -135,12 +133,6 @@ class _RoleFormScreenState extends ConsumerState<RoleFormScreen> {
                       label: 'Role Name',
                       controller: _nameController,
                       validator: (value) => value == null || value.isEmpty ? 'Required' : null,
-                    ),
-                    const SizedBox(height: 16),
-                    CustomTextField(
-                      label: 'Description',
-                      controller: _descriptionController,
-                      maxLines: 3,
                     ),
                   ],
                 ),
