@@ -4,11 +4,9 @@ import 'package:heroicons/heroicons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/utils/image_utils.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/documents/models/document.dart';
-import 'package:hybrid_digital_docs_assignment_frontend/features/documents/repositories/document_repository.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:open_filex/open_filex.dart';
 
 class DocumentCard extends ConsumerStatefulWidget {
   final Document document;
@@ -25,17 +23,44 @@ class DocumentCard extends ConsumerStatefulWidget {
 }
 
 class _DocumentCardState extends ConsumerState<DocumentCard> {
-  bool _isDownloading = false;
-
   Future<void> _handleView() async {
-    if (widget.document.fileUrl == null) {
+    final fileUrl = widget.document.fileUrl;
+    if (fileUrl == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Document URL is missing')),
       );
       return;
     }
-    
-    final url = Uri.parse(getFullImageUrl(widget.document.fileUrl));
+
+    final ext = fileUrl.split('.').last.toLowerCase();
+    final isPreviewable = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].contains(ext);
+
+    if (!isPreviewable) {
+      final shouldDownload = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Unsupported File Type'),
+          content: Text(
+            'Mobile devices cannot preview .$ext files directly inside the app. '
+            'This file will be opened in your external web browser so you can download or view it.'
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Continue'),
+            ),
+          ],
+        ),
+      );
+
+      if (shouldDownload != true) return;
+    }
+
+    final url = Uri.parse(getFullImageUrl(fileUrl));
     try {
       final launched = await launchUrl(url, mode: LaunchMode.externalApplication);
       if (!launched && mounted) {
@@ -52,73 +77,11 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
     }
   }
 
-  Future<void> _handleDownload() async {
-    if (widget.document.fileUrl == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Document URL is missing')),
-      );
-      return;
-    }
-
-    setState(() => _isDownloading = true);
-
-    try {
-      final repo = ref.read(documentRepositoryProvider);
-      final fileName = widget.document.fileName ?? 'document_${widget.document.id}.pdf';
-      
-      final filePath = await repo.downloadDocument(widget.document.id, fileName);
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Downloaded to $filePath'),
-            backgroundColor: Colors.green,
-            action: SnackBarAction(
-              label: 'Open',
-              textColor: Colors.white,
-              onPressed: () async {
-                try {
-                  final result = await OpenFilex.open(filePath);
-                  if (result.type != ResultType.done) {
-                    if (mounted) {
-                       ScaffoldMessenger.of(context).showSnackBar(
-                         SnackBar(content: Text('Could not open file: ${result.message}')),
-                       );
-                    }
-                  }
-                } catch (e) {
-                   if (mounted) {
-                       ScaffoldMessenger.of(context).showSnackBar(
-                         SnackBar(content: Text('Could not open file: $e')),
-                       );
-                    }
-                }
-              },
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isDownloading = false);
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final document = widget.document;
-    
+
     return CustomCard(
       onTap: widget.onTap ?? () => context.push('/documents/detail', extra: document),
       child: Column(
@@ -162,53 +125,31 @@ class _DocumentCardState extends ConsumerState<DocumentCard> {
                   ],
                 ),
               ),
-              if (_isDownloading)
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.0),
-                  child: SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                )
-              else
-                PopupMenuButton<String>(
-                  icon: HeroIcon(
-                    HeroIcons.ellipsisVertical,
-                    size: 20,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                  ),
-                  onSelected: (value) {
-                    if (value == 'view') _handleView();
-                    if (value == 'download') _handleDownload();
-                  },
-                  itemBuilder: (BuildContext context) => [
-                    PopupMenuItem(
-                      value: 'view',
-                      child: Row(
-                        children: [
-                          HeroIcon(HeroIcons.eye, size: 18, color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
-                          const SizedBox(width: 8),
-                          const Text('View'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'download',
-                      child: Row(
-                        children: [
-                          HeroIcon(HeroIcons.arrowDownTray, size: 18, color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
-                          const SizedBox(width: 8),
-                          const Text('Download'),
-                        ],
-                      ),
-                    ),
-                  ],
+              PopupMenuButton<String>(
+                icon: HeroIcon(
+                  HeroIcons.ellipsisVertical,
+                  size: 20,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
+                onSelected: (value) {
+                  if (value == 'view') _handleView();
+                },
+                itemBuilder: (BuildContext context) => [
+                  PopupMenuItem(
+                    value: 'view',
+                    child: Row(
+                      children: [
+                        HeroIcon(HeroIcons.eye, size: 18, color: theme.colorScheme.onSurface.withValues(alpha: 0.7)),
+                        const SizedBox(width: 8),
+                        const Text('View'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
-          const SizedBox(height: 16),
-          Row(
+          const SizedBox(height: 16),          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
