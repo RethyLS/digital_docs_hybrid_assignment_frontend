@@ -36,8 +36,17 @@ final dioProvider = Provider<Dio>((ref) {
               // We just check if the host is reachable.
               await pingDio.get('http://10.0.2.2:8000/api/login');
               globalResolvedBaseUrl = 'http://10.0.2.2:8000/api';
+            } on DioException catch (e) {
+              // If the server responded with an HTTP error (like 405 Method Not Allowed),
+              // it means the server IS there, so we are on an emulator!
+              if (e.response != null || e.type == DioExceptionType.badResponse) {
+                globalResolvedBaseUrl = 'http://10.0.2.2:8000/api';
+              } else {
+                // If it fails with ConnectionTimeout or ConnectionRefused, we are on a physical device
+                globalResolvedBaseUrl = 'http://127.0.0.1:8000/api';
+              }
             } catch (e) {
-              // If 10.0.2.2 fails/times out, we are likely on a physical device using 'adb reverse'
+              // Any other unknown error -> fallback to physical device 
               globalResolvedBaseUrl = 'http://127.0.0.1:8000/api';
             }
           } else {
