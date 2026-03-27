@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/users/models/user.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/users/providers/user_profile_provider.dart';
@@ -81,7 +82,7 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Security'),
+        title: Text('settings.security'.tr()),
       ),
       body: userAsync.when(
         data: (user) {
@@ -94,12 +95,12 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Change Password',
+                      'security_screen.change_password'.tr(),
                       style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
-                      label: 'New Password *',
+                      label: 'security_screen.new_password'.tr(),
                       controller: _newPasswordController,
                       obscureText: true,
                       validator: (val) {
@@ -110,7 +111,7 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
-                      label: 'Confirm New Password *',
+                      label: 'security_screen.confirm_password'.tr(),
                       controller: _confirmPasswordController,
                       obscureText: true,
                       validator: (val) {
@@ -122,7 +123,7 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: CustomButton(
-                        text: 'Update Password',
+                        text: 'security_screen.update_password'.tr(),
                         isLoading: _isLoading,
                         onPressed: _isLoading ? () {} : () => _submitForm(user),
                       ),

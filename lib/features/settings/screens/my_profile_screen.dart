@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:image_picker/image_picker.dart';
@@ -154,7 +155,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Profile'),
+        title: Text('settings.my_profile'.tr()),
       ),
       body: userAsync.when(
         data: (user) {
@@ -220,7 +221,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Personal Information',
+                          'profile.personal_info'.tr(),
                           style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 16),
@@ -228,7 +229,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                           children: [
                             Expanded(
                               child: CustomTextField(
-                                label: 'First Name *',
+                                label: 'profile.first_name'.tr(),
                                 controller: _firstNameController,
                                 validator: (val) => val == null || val.isEmpty ? 'Required' : null,
                               ),
@@ -236,7 +237,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                             const SizedBox(width: 16),
                             Expanded(
                               child: CustomTextField(
-                                label: 'Last Name *',
+                                label: 'profile.last_name'.tr(),
                                 controller: _lastNameController,
                                 validator: (val) => val == null || val.isEmpty ? 'Required' : null,
                               ),
@@ -245,7 +246,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                         ),
                         const SizedBox(height: 16),
                         CustomTextField(
-                          label: 'Email *',
+                          label: 'profile.email'.tr(),
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           validator: (val) {
@@ -256,13 +257,13 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                         ),
                         const SizedBox(height: 16),
                         CustomTextField(
-                          label: 'Phone (Optional)',
+                          label: 'profile.phone'.tr(),
                           controller: _phoneController,
                           keyboardType: TextInputType.phone,
                         ),
                         const SizedBox(height: 16),
                         CustomTextField(
-                          label: 'Bio (Optional)',
+                          label: 'profile.bio'.tr(),
                           controller: _bioController,
                           maxLines: 3,
                         ),
@@ -270,7 +271,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: CustomButton(
-                            text: 'Save Changes',
+                            text: 'profile.save_changes'.tr(),
                             isLoading: _isLoading,
                             onPressed: _isLoading ? () {} : () => _submitForm(user.id),
                           ),

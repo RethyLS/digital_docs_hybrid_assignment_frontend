@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:go_router/go_router.dart';
@@ -114,7 +115,7 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? 'Edit User' : 'Add User'),
+        title: Text(isEditing ? 'common.edit'.tr() : 'common.add'.tr()),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -125,24 +126,24 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'User Information',
+                  'user_management.user_info'.tr(),
                   style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
                 CustomTextField(
-                  label: 'First Name',
+                  label: 'profile.first_name'.tr(),
                   controller: _firstNameController,
                   validator: (value) => value == null || value.isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 16),
                 CustomTextField(
-                  label: 'Last Name',
+                  label: 'profile.last_name'.tr(),
                   controller: _lastNameController,
                   validator: (value) => value == null || value.isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 16),
                 CustomTextField(
-                  label: 'Email',
+                  label: 'profile.email'.tr(),
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
@@ -153,7 +154,7 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                 ),
                 const SizedBox(height: 16),
                 CustomTextField(
-                  label: 'Phone Number',
+                  label: 'profile.phone'.tr(),
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
                 ),

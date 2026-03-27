@@ -73,5 +73,38 @@
     "choose_language": "Choose your preferred language",
     "english": "English",
     "khmer": "Khmer"
+  },
+  "profile": {
+    "personal_info": "Personal Information",
+    "first_name": "First Name *",
+    "last_name": "Last Name *",
+    "email": "Email *",
+    "phone": "Phone (Optional)",
+    "bio": "Bio (Optional)",
+    "save_changes": "Save Changes",
+    "avatar_updated": "Avatar updated successfully",
+    "profile_updated": "Profile updated successfully"
+  },
+  "security_screen": {
+    "change_password": "Change Password",
+    "new_password": "New Password *",
+    "confirm_password": "Confirm New Password *",
+    "update_password": "Update Password",
+    "password_mismatch": "Passwords do not match",
+    "password_changed": "Password changed successfully"
+  },
+  "user_management": {
+    "user_info": "User Information",
+    "role": "Role *",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "save_user": "Save User",
+    "update_user": "Update User",
+    "delete_user": "Delete User",
+    "delete_confirm": "Are you sure you want to delete the user",
+    "user_created": "User created successfully",
+    "user_updated": "User updated successfully",
+    "user_deleted": "User deleted successfully"
   }
 }
