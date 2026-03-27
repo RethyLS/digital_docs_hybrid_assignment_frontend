@@ -26,6 +26,9 @@ import 'package:hybrid_digital_docs_assignment_frontend/features/users/models/us
 import 'package:hybrid_digital_docs_assignment_frontend/features/roles/screens/roles_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/roles/screens/role_form_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/roles/screens/role_detail_screen.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screens/document_configuration/document_configuration_screen.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screens/document_configuration/document_prefix_form_screen.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/models/document_prefix.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/users/models/role.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/splash/screens/splash_screen.dart';
 
@@ -146,7 +149,24 @@ final routerProvider = Provider<GoRouter>((ref) {
             },
           ),
         ],
-      ),      StatefulShellRoute.indexedStack(
+      ),      GoRoute(
+        path: '/document-configuration',
+        builder: (context, state) => const DocumentConfigurationScreen(),
+        routes: [
+          GoRoute(
+            path: 'add',
+            builder: (context, state) => const DocumentPrefixFormScreen(),
+          ),
+          GoRoute(
+            path: 'edit',
+            builder: (context, state) {
+              final prefix = state.extra as DocumentPrefix;
+              return DocumentPrefixFormScreen(prefix: prefix);
+            },
+          ),
+        ],
+      ),
+      StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return MainNavigationScreen(navigationShell: navigationShell);
         },
