@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screens/document_configuration/document_prefix_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screens/document_configuration/document_prefix_repository.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/models/document_prefix.dart';
-import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_button.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/skeleton.dart';
 
 class DocumentConfigurationScreen extends ConsumerWidget {
   const DocumentConfigurationScreen({super.key});
@@ -51,6 +51,35 @@ class DocumentConfigurationScreen extends ConsumerWidget {
     }
   }
 
+  Widget _buildSkeletonList() {
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: 5,
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
+      itemBuilder: (context, index) => CustomCard(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            const Skeleton(width: 44, height: 44, borderRadius: 22),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Skeleton(width: 150, height: 16),
+                  SizedBox(height: 8),
+                  Skeleton(width: 100, height: 12),
+                ],
+              ),
+            ),
+            const SizedBox(width: 16),
+            const Skeleton(width: 24, height: 24, borderRadius: 4),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
@@ -62,6 +91,10 @@ class DocumentConfigurationScreen extends ConsumerWidget {
       ),
       body: prefixesAsync.when(
         data: (prefixes) {
+          if (prefixes.isEmpty) {
+             return const Center(child: Text('No prefixes found.'));
+          }
+
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: prefixes.length,
@@ -69,6 +102,7 @@ class DocumentConfigurationScreen extends ConsumerWidget {
             itemBuilder: (context, index) {
               final prefix = prefixes[index];
               return CustomCard(
+                onTap: () => context.push('/document-configuration/detail', extra: prefix),
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
@@ -130,22 +164,14 @@ class DocumentConfigurationScreen extends ConsumerWidget {
                         ],
                       ),
                     ),
-                    IconButton(
-                      icon: const HeroIcon(HeroIcons.pencilSquare, size: 20),
-                      onPressed: () => context.push('/document-configuration/edit', extra: prefix),
-                    ),
-                    if (prefix.isDefault != true)
-                      IconButton(
-                        icon: HeroIcon(HeroIcons.trash, size: 20, color: theme.colorScheme.error),
-                        onPressed: () => _deletePrefix(context, ref, prefix),
-                      ),
+                    HeroIcon(HeroIcons.chevronRight, size: 20, color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
                   ],
                 ),
               );
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => _buildSkeletonList(),
         error: (err, stack) => Center(child: Text('Error: $err')),
       ),
       floatingActionButton: FloatingActionButton(

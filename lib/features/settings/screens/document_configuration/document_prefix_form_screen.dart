@@ -51,6 +51,7 @@ class _DocumentPrefixFormScreenState extends ConsumerState<DocumentPrefixFormScr
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
+    final isEditing = widget.prefix != null;
 
     try {
       final repo = ref.read(documentPrefixRepositoryProvider);
@@ -80,7 +81,12 @@ class _DocumentPrefixFormScreenState extends ConsumerState<DocumentPrefixFormScr
             backgroundColor: Colors.green,
           ),
         );
-        context.pop();
+        if (isEditing) {
+          context.pop();
+          context.pop();
+        } else {
+          context.pop();
+        }
       }
     } catch (e) {
       if (mounted) {
