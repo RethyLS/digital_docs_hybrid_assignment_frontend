@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
@@ -24,25 +25,25 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             _buildUserHeader(context, ref),
             const SizedBox(height: 24),
-            _buildSectionHeader(context, 'Account'),
+            _buildSectionHeader(context, 'settings.account'.tr()),
             _buildSettingsGroup(context, [
               _buildSettingItem(
                 context,
                 icon: HeroIcons.user,
-                title: 'My Profile',
+                title: 'settings.my_profile'.tr(),
                 subtitle: 'Personal information and avatar',
                 onTap: () => context.push('/profile'),
               ),
               _buildSettingItem(
                 context,
                 icon: HeroIcons.lockClosed,
-                title: 'Security',
+                title: 'settings.security'.tr(),
                 subtitle: 'Password and authentication',
                 onTap: () => context.push('/security'),
               ),
             ]),
             const SizedBox(height: 24),
-            _buildSectionHeader(context, 'Organization'),
+            _buildSectionHeader(context, 'settings.organization'.tr()),
             _buildSettingsGroup(context, [
               _buildSettingItem(
                 context,
@@ -66,26 +67,26 @@ class SettingsScreen extends ConsumerWidget {
                 onTap: () => context.push('/document-configuration'),              ),
             ]),
             const SizedBox(height: 24),
-            _buildSectionHeader(context, 'App Preferences'),
+            _buildSectionHeader(context, 'settings.app_preferences'.tr()),
             _buildSettingsGroup(context, [
               _buildSettingItem(
                 context,
                 icon: HeroIcons.swatch,
-                title: 'Appearance',
+                title: 'settings.appearance'.tr(),
                 subtitle: 'Theme, colors, and styling',
                 onTap: () => context.push('/appearance'),
               ),
               _buildSettingItem(
                 context,
                 icon: HeroIcons.language,
-                title: 'Language',
-                subtitle: 'English, Khmer, etc.',
+                title: 'settings.language'.tr(),
+                subtitle: 'English, Khmer',
                 onTap: () => context.push('/language'),
               ),
               _buildSettingItem(
                 context,
                 icon: HeroIcons.informationCircle,
-                title: 'About',
+                title: 'settings.about'.tr(),
                 subtitle: 'App version and info',
                 onTap: () => context.push('/about'),
               ),
@@ -98,7 +99,7 @@ class SettingsScreen extends ConsumerWidget {
                   ref.read(authProvider.notifier).logout();
                 },
                 icon: const HeroIcon(HeroIcons.arrowRightOnRectangle, size: 18),
-                label: const Text('Log Out'),
+                label: Text('settings.logout'.tr()),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.redAccent,
                   side: const BorderSide(color: Colors.redAccent),
