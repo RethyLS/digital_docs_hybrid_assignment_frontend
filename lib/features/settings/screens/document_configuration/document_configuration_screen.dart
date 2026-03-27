@@ -91,9 +91,13 @@ class DocumentConfigurationScreen extends ConsumerWidget {
                         children: [
                           Row(
                             children: [
-                              Text(
-                                prefix.name ?? 'Unknown',
-                                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                              Flexible(
+                                child: Text(
+                                  prefix.name ?? 'Unknown',
+                                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                               if (prefix.isDefault == true) ...[
                                 const SizedBox(width: 8),
