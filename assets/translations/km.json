@@ -1,13 +1,30 @@
 {
   "app_title": "ប្រព័ន្ធគ្រប់គ្រងឯកសារ",
+  "common": {
+    "save": "រក្សាទុក",
+    "cancel": "បោះបង់",
+    "delete": "លុប",
+    "edit": "កែប្រែ",
+    "add": "បន្ថែម",
+    "search": "ស្វែងរក",
+    "error": "កំហុស"
+  },
+  "navigation": {
+    "dashboard": "ផ្ទាំងគ្រប់គ្រង",
+    "documents": "ឯកសារ",
+    "employees": "បុគ្គលិក",
+    "settings": "ការកំណត់"
+  },
   "dashboard": {
     "title": "ផ្ទាំងគ្រប់គ្រង",
     "overview": "ទិដ្ឋភាពទូទៅ",
     "total_employees": "បុគ្គលិកសរុប",
+    "total_documents": "ឯកសារសរុប",
+    "total_users": "អ្នកប្រើប្រាស់សរុប",
+    "active_employees": "បុគ្គលិកសកម្ម",
     "active_documents": "ឯកសារសកម្ម",
-    "pending_approvals": "រង់ចាំការអនុម័ត",
-    "departments": "នាយកដ្ឋាន",
-    "recent_activities": "សកម្មភាពថ្មីៗ"
+    "recent_activities": "សកម្មភាពថ្មីៗ",
+    "no_recent_activities": "មិនមានសកម្មភាពថ្មីៗទេ"
   },
   "documents": {
     "title": "ឯកសារ",
@@ -15,7 +32,18 @@
   },
   "employees": {
     "title": "បុគ្គលិក",
-    "search_hint": "ស្វែងរកបុគ្គលិក..."
+    "search_hint": "ស្វែងរកបុគ្គលិក...",
+    "add_employee": "បន្ថែមបុគ្គលិក"
+  },
+  "users": {
+    "title": "គ្រប់គ្រងអ្នកប្រើប្រាស់",
+    "search_hint": "ស្វែងរកអ្នកប្រើប្រាស់...",
+    "add_user": "បន្ថែមអ្នកប្រើប្រាស់"
+  },
+  "roles": {
+    "title": "តួនាទី និងសិទ្ធិ",
+    "search_hint": "ស្វែងរកតួនាទី...",
+    "add_role": "បន្ថែមតួនាទី"
   },
   "settings": {
     "title": "ការកំណត់",
@@ -23,16 +51,27 @@
     "organization": "អង្គភាព",
     "app_preferences": "ការកំណត់កម្មវិធី",
     "my_profile": "ប្រវត្តិរូបរបស់ខ្ញុំ",
+    "my_profile_sub": "ព័ត៌មានផ្ទាល់ខ្លួន និងរូបតំណាង",
     "security": "សុវត្ថិភាព",
+    "security_sub": "ពាក្យសម្ងាត់ និងការផ្ទៀងផ្ទាត់ភាពត្រឹមត្រូវ",
+    "user_management": "គ្រប់គ្រងអ្នកប្រើប្រាស់",
+    "user_management_sub": "គ្រប់គ្រងបុគ្គលិក និងសិទ្ធិ",
+    "roles_permissions": "តួនាទី និងសិទ្ធិ",
+    "roles_permissions_sub": "កំណត់កម្រិតនៃការចូលប្រើ",
+    "doc_config": "ការកំណត់ឯកសារ",
+    "doc_config_sub": "គ្រប់គ្រងបុព្វបទ និងប្រភេទឯកសារ",
     "appearance": "រូបរាង",
+    "appearance_sub": "មុខងារងងឹត និងរចនាប័ទ្ម",
     "language": "ភាសា",
+    "language_sub": "អង់គ្លេស, ខ្មែរ",
     "about": "អំពីកម្មវិធី",
+    "about_sub": "កំណែកម្មវិធី និងព័ត៌មាន",
     "logout": "ចាកចេញ"
   },
   "language_screen": {
     "title": "ភាសា",
     "choose_language": "ជ្រើសរើសភាសាដែលអ្នកចង់ប្រើ",
-    "english": "ភាសាអង់គ្លេស",
-    "khmer": "ភាសាខ្មែរ"
+    "english": "អង់គ្លេស",
+    "khmer": "ខ្មែរ"
   }
 }

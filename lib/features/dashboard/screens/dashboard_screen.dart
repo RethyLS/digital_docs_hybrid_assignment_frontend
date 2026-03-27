@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
@@ -20,7 +21,7 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: Text('dashboard.title'.tr()),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -66,7 +67,7 @@ class DashboardScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Overview',
+                'dashboard.overview'.tr(),
                 style: theme.textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
@@ -80,28 +81,28 @@ class DashboardScreen extends ConsumerWidget {
                 children: [
                   _buildMetricCard(
                     context, 
-                    'Total Employees', 
+                    'dashboard.total_employees'.tr(), 
                     data.totalEmployees.toString(), 
                     HeroIcons.users,
                     onTap: () => context.go('/employees'),
                   ),
                   _buildMetricCard(
                     context, 
-                    'Total Documents', 
+                    'dashboard.total_documents'.tr(), 
                     data.totalDocuments.toString(), 
                     HeroIcons.documentText,
                     onTap: () => context.go('/documents'),
                   ),
                   _buildMetricCard(
                     context, 
-                    'Total Users', 
+                    'dashboard.total_users'.tr(), 
                     data.totalUsers.toString(), 
                     HeroIcons.userGroup,
                     onTap: () => context.go('/settings'),
                   ),
                   _buildMetricCard(
                     context, 
-                    'Active Employees', 
+                    'dashboard.active_employees'.tr(), 
                     data.activeEmployees.toString(), 
                     HeroIcons.users,
                     onTap: () => context.go('/employees'),
@@ -110,7 +111,7 @@ class DashboardScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 24),
               Text(
-                'Recent Activities',
+                'dashboard.recent_activities'.tr(),
                 style: theme.textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
@@ -118,7 +119,7 @@ class DashboardScreen extends ConsumerWidget {
                 CustomCard(
                   child: Center(
                     child: Text(
-                      'No recent activities',
+                      'dashboard.no_recent_activities'.tr(),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurface.withOpacity(0.5),
                       ),

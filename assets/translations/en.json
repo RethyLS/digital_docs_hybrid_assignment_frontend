@@ -1,13 +1,30 @@
 {
   "app_title": "HR Document System",
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "error": "Error"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "documents": "Documents",
+    "employees": "Employees",
+    "settings": "Settings"
+  },
   "dashboard": {
     "title": "Dashboard",
     "overview": "Overview",
     "total_employees": "Total Employees",
+    "total_documents": "Total Documents",
+    "total_users": "Total Users",
+    "active_employees": "Active Employees",
     "active_documents": "Active Documents",
-    "pending_approvals": "Pending Approvals",
-    "departments": "Departments",
-    "recent_activities": "Recent Activities"
+    "recent_activities": "Recent Activities",
+    "no_recent_activities": "No recent activities"
   },
   "documents": {
     "title": "Documents",
@@ -15,7 +32,18 @@
   },
   "employees": {
     "title": "Employees",
-    "search_hint": "Search employees..."
+    "search_hint": "Search employees...",
+    "add_employee": "Add Employee"
+  },
+  "users": {
+    "title": "User Management",
+    "search_hint": "Search users...",
+    "add_user": "Add User"
+  },
+  "roles": {
+    "title": "Roles & Permissions",
+    "search_hint": "Search roles...",
+    "add_role": "Add Role"
   },
   "settings": {
     "title": "Settings",
@@ -23,10 +51,21 @@
     "organization": "Organization",
     "app_preferences": "App Preferences",
     "my_profile": "My Profile",
+    "my_profile_sub": "Personal information and avatar",
     "security": "Security",
+    "security_sub": "Password and authentication",
+    "user_management": "User Management",
+    "user_management_sub": "Manage staff and permissions",
+    "roles_permissions": "Roles & Permissions",
+    "roles_permissions_sub": "Configure access levels",
+    "doc_config": "Document Configuration",
+    "doc_config_sub": "Manage prefixes and categories",
     "appearance": "Appearance",
+    "appearance_sub": "Dark mode and theming",
     "language": "Language",
+    "language_sub": "English, Khmer",
     "about": "About",
+    "about_sub": "App version and info",
     "logout": "Log Out"
   },
   "language_screen": {

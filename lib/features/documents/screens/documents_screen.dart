@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:heroicons/heroicons.dart';
@@ -54,7 +55,7 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Documents'),
+        title: Text('documents.title'.tr()),
         actions: [
           IconButton(
             icon: const HeroIcon(HeroIcons.plus, size: 24),
