@@ -28,6 +28,7 @@ import 'package:hybrid_digital_docs_assignment_frontend/features/roles/screens/r
 import 'package:hybrid_digital_docs_assignment_frontend/features/roles/screens/role_detail_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screens/document_configuration/document_configuration_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screens/document_configuration/document_prefix_form_screen.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screens/document_configuration/document_prefix_detail_screen.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/models/document_prefix.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/users/models/role.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/splash/screens/splash_screen.dart';
@@ -156,6 +157,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'add',
             builder: (context, state) => const DocumentPrefixFormScreen(),
+          ),
+          GoRoute(
+            path: 'detail',
+            builder: (context, state) {
+              final prefix = state.extra as DocumentPrefix;
+              return DocumentPrefixDetailScreen(prefix: prefix);
+            },
           ),
           GoRoute(
             path: 'edit',
