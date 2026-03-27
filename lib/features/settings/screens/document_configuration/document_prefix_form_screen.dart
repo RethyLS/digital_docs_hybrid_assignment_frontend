@@ -64,6 +64,7 @@ class _DocumentPrefixFormScreenState extends ConsumerState<DocumentPrefixFormScr
         separator: _separatorController.text.trim().isEmpty ? null : _separatorController.text.trim(),
         format: '{prefix}{separator}{sequence}', // Assuming simple format based on backend
         description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
+        status: widget.prefix?.status ?? 'active',
         isDefault: _isDefault,
       );
 
