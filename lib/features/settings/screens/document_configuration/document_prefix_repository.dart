@@ -32,8 +32,15 @@ class DocumentPrefixRepository {
     } on DioException catch (e) {
       if (e.response != null && e.response?.data != null) {
         final data = e.response?.data;
-        if (data is Map && data.containsKey('message')) {
-          throw Exception(data['message']);
+        if (data is Map) {
+          if (data.containsKey('errors')) {
+            final errors = data['errors'] as Map<String, dynamic>;
+            final firstError = errors.values.first[0];
+            throw Exception(firstError.toString());
+          }
+          if (data.containsKey('message')) {
+            throw Exception(data['message']);
+          }
         }
       }
       throw Exception('Failed to create prefix: ${e.message}');
@@ -49,8 +56,15 @@ class DocumentPrefixRepository {
     } on DioException catch (e) {
       if (e.response != null && e.response?.data != null) {
         final data = e.response?.data;
-        if (data is Map && data.containsKey('message')) {
-          throw Exception(data['message']);
+        if (data is Map) {
+          if (data.containsKey('errors')) {
+            final errors = data['errors'] as Map<String, dynamic>;
+            final firstError = errors.values.first[0];
+            throw Exception(firstError.toString());
+          }
+          if (data.containsKey('message')) {
+            throw Exception(data['message']);
+          }
         }
       }
       throw Exception('Failed to update prefix: ${e.message}');
@@ -66,8 +80,15 @@ class DocumentPrefixRepository {
     } on DioException catch (e) {
       if (e.response != null && e.response?.data != null) {
         final data = e.response?.data;
-        if (data is Map && data.containsKey('message')) {
-          throw Exception(data['message']);
+        if (data is Map) {
+          if (data.containsKey('errors')) {
+            final errors = data['errors'] as Map<String, dynamic>;
+            final firstError = errors.values.first[0];
+            throw Exception(firstError.toString());
+          }
+          if (data.containsKey('message')) {
+            throw Exception(data['message']);
+          }
         }
       }
       throw Exception('Failed to delete prefix: ${e.message}');
