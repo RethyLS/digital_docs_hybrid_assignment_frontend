@@ -7,11 +7,26 @@ import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screen
 import 'package:hybrid_digital_docs_assignment_frontend/shared/models/document_prefix.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/skeleton.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_text_field.dart';
 
-class DocumentConfigurationScreen extends ConsumerWidget {
+class DocumentConfigurationScreen extends ConsumerStatefulWidget {
   const DocumentConfigurationScreen({super.key});
 
-  Future<void> _deletePrefix(BuildContext context, WidgetRef ref, DocumentPrefix prefix) async {
+  @override
+  ConsumerState<DocumentConfigurationScreen> createState() => _DocumentConfigurationScreenState();
+}
+
+class _DocumentConfigurationScreenState extends ConsumerState<DocumentConfigurationScreen> {
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _deletePrefix(DocumentPrefix prefix) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -36,13 +51,13 @@ class DocumentConfigurationScreen extends ConsumerWidget {
         final repo = ref.read(documentPrefixRepositoryProvider);
         await repo.deletePrefix(prefix.id);
         ref.invalidate(documentPrefixesProvider);
-        if (context.mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Prefix deleted successfully'), backgroundColor: Colors.green),
           );
         }
       } catch (e) {
-        if (context.mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.redAccent),
           );
@@ -53,7 +68,7 @@ class DocumentConfigurationScreen extends ConsumerWidget {
 
   Widget _buildSkeletonList() {
     return ListView.separated(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       itemCount: 5,
       separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) => CustomCard(
@@ -81,7 +96,7 @@ class DocumentConfigurationScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final prefixesAsync = ref.watch(documentPrefixesProvider);
 
@@ -89,90 +104,132 @@ class DocumentConfigurationScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Document Configuration'),
       ),
-      body: prefixesAsync.when(
-        data: (prefixes) {
-          if (prefixes.isEmpty) {
-             return const Center(child: Text('No prefixes found.'));
-          }
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search prefixes...',
+                prefixIcon: const Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: HeroIcon(HeroIcons.magnifyingGlass),
+                ),
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value.toLowerCase();
+                });
+              },
+            ),
+          ),
+          Expanded(
+            child: prefixesAsync.when(
+              data: (prefixes) {
+                final filteredPrefixes = prefixes.where((p) {
+                  return (p.name?.toLowerCase().contains(_searchQuery) ?? false) ||
+                         (p.prefix?.toLowerCase().contains(_searchQuery) ?? false);
+                }).toList();
 
-          return ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: prefixes.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final prefix = prefixes[index];
-              return CustomCard(
-                onTap: () => context.push('/document-configuration/detail', extra: prefix),
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: HeroIcon(
-                        HeroIcons.hashtag,
-                        color: theme.colorScheme.primary,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                if (filteredPrefixes.isEmpty) {
+                   return Center(
+                     child: Text(
+                       _searchQuery.isEmpty ? 'No prefixes found.' : 'No results matching "$_searchQuery"',
+                       style: theme.textTheme.bodyMedium?.copyWith(
+                         color: theme.colorScheme.onSurface.withValues(alpha: 0.5)
+                       ),
+                     ),
+                   );
+                }
+
+                return ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  itemCount: filteredPrefixes.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final prefix = filteredPrefixes[index];
+                    return CustomCard(
+                      onTap: () => context.push('/document-configuration/detail', extra: prefix),
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
                         children: [
-                          Row(
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  prefix.name ?? 'Unknown',
-                                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              if (prefix.isDefault == true) ...[
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.secondary.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(4),
-                                    border: Border.all(color: theme.colorScheme.secondary.withValues(alpha: 0.3)),
-                                  ),
-                                  child: Text(
-                                    'DEFAULT',
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: theme.colorScheme.secondary,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 9,
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: HeroIcon(
+                              HeroIcons.hashtag,
+                              color: theme.colorScheme.primary,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        prefix.name ?? 'Unknown',
+                                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
+                                    if (prefix.isDefault == true) ...[
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: theme.colorScheme.secondary.withValues(alpha: 0.1),
+                                          borderRadius: BorderRadius.circular(4),
+                                          border: Border.all(color: theme.colorScheme.secondary.withValues(alpha: 0.3)),
+                                        ),
+                                        child: Text(
+                                          'DEFAULT',
+                                          style: theme.textTheme.labelSmall?.copyWith(
+                                            color: theme.colorScheme.secondary,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 9,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Format: ${prefix.prefix}${prefix.separator}{sequence}',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                   ),
                                 ),
                               ],
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Format: ${prefix.prefix}${prefix.separator}{sequence}',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                           ),
+                          HeroIcon(HeroIcons.chevronRight, size: 20, color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
                         ],
                       ),
-                    ),
-                    HeroIcon(HeroIcons.chevronRight, size: 20, color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
-                  ],
-                ),
-              );
-            },
-          );
-        },
-        loading: () => _buildSkeletonList(),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+                    );
+                  },
+                );
+              },
+              loading: () => _buildSkeletonList(),
+              error: (err, stack) => Center(child: Text('Error: $err')),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/document-configuration/add'),

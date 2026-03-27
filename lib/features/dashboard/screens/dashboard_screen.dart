@@ -101,9 +101,10 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                   _buildMetricCard(
                     context, 
-                    'Departments', 
-                    'N/A', 
-                    HeroIcons.buildingOffice2,
+                    'Active Employees', 
+                    data.activeEmployees.toString(), 
+                    HeroIcons.users,
+                    onTap: () => context.go('/employees'),
                   ),
                 ],
               ),

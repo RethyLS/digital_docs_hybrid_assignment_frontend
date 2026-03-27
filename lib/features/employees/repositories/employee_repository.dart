@@ -16,11 +16,12 @@ class EmployeeRepository {
   EmployeeRepository(this._dio);
 
   Future<EmployeeResponse> getEmployees({
-    int page = 1, 
+    int page = 1,
     int perPage = 15,
     String? search,
     int? departmentId,
     int? branchId,
+    String? status,
   }) async {
     try {
       final response = await _dio.get('/employees', queryParameters: {
@@ -29,8 +30,8 @@ class EmployeeRepository {
         if (search != null && search.isNotEmpty) 'search': search,
         if (departmentId != null) 'department_id': departmentId,
         if (branchId != null) 'branch_id': branchId,
-      });
-      return EmployeeResponse.fromJson(response.data);
+        if (status != null && status.isNotEmpty) 'status': status,
+      });      return EmployeeResponse.fromJson(response.data);
     } catch (e) {
       throw Exception('Failed to load employees: $e');
     }

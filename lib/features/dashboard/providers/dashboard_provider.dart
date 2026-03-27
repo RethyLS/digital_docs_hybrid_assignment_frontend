@@ -9,18 +9,23 @@ final dashboardProvider = FutureProvider.autoDispose<DashboardData>((ref) async 
   final employeeRepo = ref.watch(employeeRepositoryProvider);
   final userRepo = ref.watch(userRepositoryProvider);
 
-  // Fetch recent documents and total documents count (page 1, 5 items)
-  final documentsResponse = await documentRepo.getDocuments(page: 1, perPage: 5);
-  
-  // Fetch total employees count (page 1, 1 item just to get the meta total)
-  final employeesResponse = await employeeRepo.getEmployees(page: 1, perPage: 1);
+  // Fetch data in parallel for faster dashboard loading
+  final results = await Future.wait([
+    documentRepo.getDocuments(page: 1, perPage: 5),
+    employeeRepo.getEmployees(page: 1, perPage: 1),
+    employeeRepo.getEmployees(page: 1, perPage: 1, status: 'active'),
+    userRepo.getUsers(page: 1, perPage: 1),
+  ]);
 
-  // Fetch total users count (page 1, 1 item just to get the meta total)
-  final usersResponse = await userRepo.getUsers(page: 1, perPage: 1);
+  final documentsResponse = results[0] as dynamic;
+  final totalEmployeesResponse = results[1] as dynamic;
+  final activeEmployeesResponse = results[2] as dynamic;
+  final usersResponse = results[3] as dynamic;
 
   return DashboardData(
     totalDocuments: documentsResponse.meta?.total ?? 0,
-    totalEmployees: employeesResponse.meta?.total ?? 0,
+    totalEmployees: totalEmployeesResponse.meta?.total ?? 0,
+    activeEmployees: activeEmployeesResponse.meta?.total ?? 0,
     totalUsers: usersResponse.meta?.total ?? 0,                                                                                   
     recentDocuments: documentsResponse.data,
   );
