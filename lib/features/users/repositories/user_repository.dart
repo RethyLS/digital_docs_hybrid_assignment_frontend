@@ -36,11 +36,14 @@ class UserRepository {
     }
   }
 
-  Future<bool> createUser(User user, {String? password}) async {
+  Future<bool> createUser(User user, {String? password, String? passwordConfirmation}) async {
     try {
       final data = user.toJson();
       if (password != null && password.isNotEmpty) {
         data['password'] = password;
+      }
+      if (passwordConfirmation != null && passwordConfirmation.isNotEmpty) {
+        data['password_confirmation'] = passwordConfirmation;
       }
       
       // Spatie expects an array of role names, not role objects
