@@ -29,13 +29,16 @@ class MyApp extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider);
     final router = ref.watch(routerProvider);
 
+    // Dynamically pick font family based on selected language
+    final fontFamily = context.locale.languageCode == 'km' ? 'KantumruyPro' : 'Roboto';
+
     return MaterialApp.router(
       title: 'app_title'.tr(),
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme(fontFamily),
+      darkTheme: AppTheme.darkTheme(fontFamily),
       themeMode: themeMode,
       routerConfig: router,
       debugShowCheckedModeBanner: false,

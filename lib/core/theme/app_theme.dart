@@ -20,8 +20,9 @@ class AppTheme {
   static const Color textSecondaryDark = Color(0xFF94A3B8); // Slate 400
   static const Color borderDark = Color(0xFF1E293B); // Slate 800
 
-  static ThemeData get lightTheme {
+  static ThemeData lightTheme(String fontFamily) {
     return ThemeData(
+      fontFamily: fontFamily,
       brightness: Brightness.light,
       primaryColor: primaryColor,
       scaffoldBackgroundColor: backgroundLight,
@@ -118,8 +119,9 @@ class AppTheme {
     );
   }
 
-  static ThemeData get darkTheme {
+  static ThemeData darkTheme(String fontFamily) {
     return ThemeData(
+      fontFamily: fontFamily,
       brightness: Brightness.dark,
       primaryColor: primaryColor,
       scaffoldBackgroundColor: backgroundDark,
