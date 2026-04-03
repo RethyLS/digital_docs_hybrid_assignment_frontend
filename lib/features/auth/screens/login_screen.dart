@@ -30,15 +30,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _handleLogin() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter both email and password.'),
+        SnackBar(
+          content: Text('login.email_password_required'.tr()),
           backgroundColor: Colors.redAccent,
         ),
       );
       return;
     }
 
-    DialogUtils.showLoadingDialog(context, message: 'Authenticating...');
+    DialogUtils.showLoadingDialog(context, message: 'login.authenticating'.tr());
 
     try {
       await ref.read(authProvider.notifier).login(
@@ -85,7 +85,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      'Sign In',
+                      'login.sign_in'.tr(),
                       textAlign: TextAlign.center,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
@@ -93,7 +93,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Access the HR Document System',
+                      'login.subtitle'.tr(),
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
@@ -103,8 +103,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                     // Email Field
                     CustomTextField(
-                      label: 'Email Address',
-                      hintText: 'name@organization.com',
+                      label: 'login.email'.tr(),
+                      hintText: 'login.email_hint'.tr(),
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                     ),
@@ -112,8 +112,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                     // Password Field
                     CustomTextField(
-                      label: 'Password',
-                      hintText: 'Enter your password',
+                      label: 'login.password'.tr(),
+                      hintText: 'login.password_hint'.tr(),
                       controller: _passwordController,
                       obscureText: _obscurePassword,
                       suffixIcon: IconButton(
@@ -133,7 +133,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                     // Login Button
                     CustomButton(
-                      text: 'Sign In',
+                      text: 'login.sign_in'.tr(),
                       onPressed: _handleLogin,
                     ),
                     const SizedBox(height: 16),

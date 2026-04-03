@@ -9,6 +9,16 @@
     "search": "Search",
     "error": "Error"
   },
+  "login": {
+    "sign_in": "Sign In",
+    "subtitle": "Access the HR Document System",
+    "email": "Email Address",
+    "email_hint": "name@organization.com",
+    "password": "Password",
+    "password_hint": "Enter your password",
+    "authenticating": "Authenticating...",
+    "email_password_required": "Please enter both email and password."
+  },
   "navigation": {
     "dashboard": "Dashboard",
     "documents": "Documents",
