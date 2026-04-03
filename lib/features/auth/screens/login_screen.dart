@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/auth/auth_provider.dart';
@@ -134,6 +135,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     CustomButton(
                       text: 'Sign In',
                       onPressed: _handleLogin,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Language Switcher
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton.icon(
+                        onPressed: () {
+                          if (context.locale.languageCode == 'en') {
+                            context.setLocale(const Locale('km'));
+                          } else {
+                            context.setLocale(const Locale('en'));
+                          }
+                        },
+                        icon: const HeroIcon(HeroIcons.language, size: 20),
+                        label: Text(
+                          context.locale.languageCode == 'en' ? 'English' : 'ភាសាខ្មែរ',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        style: TextButton.styleFrom(
+                          foregroundColor: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        ),
+                      ),
                     ),
                   ],
                 ),
