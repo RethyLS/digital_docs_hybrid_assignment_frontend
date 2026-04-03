@@ -17,6 +17,8 @@
     "password": "Password",
     "password_hint": "Enter your password",
     "authenticating": "Authenticating...",
+    "error_email_required": "Email is required",
+    "error_password_required": "Password is required",
     "email_password_required": "Please enter both email and password."
   },
   "navigation": {

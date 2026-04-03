@@ -17,6 +17,8 @@
     "password": "ពាក្យសម្ងាត់",
     "password_hint": "បញ្ចូលពាក្យសម្ងាត់របស់អ្នក",
     "authenticating": "កំពុងផ្ទៀងផ្ទាត់...",
+    "error_email_required": "តម្រូវឱ្យមានអ៊ីមែល",
+    "error_password_required": "តម្រូវឱ្យមានពាក្យសម្ងាត់",
     "email_password_required": "សូមបញ្ចូលទាំងអ៊ីមែល និងពាក្យសម្ងាត់។"
   },
   "navigation": {
