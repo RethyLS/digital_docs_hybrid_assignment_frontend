@@ -19,7 +19,8 @@
     "authenticating": "កំពុងផ្ទៀងផ្ទាត់...",
     "error_email_required": "តម្រូវឱ្យមានអ៊ីមែល",
     "error_password_required": "តម្រូវឱ្យមានពាក្យសម្ងាត់",
-    "email_password_required": "សូមបញ្ចូលទាំងអ៊ីមែល និងពាក្យសម្ងាត់។"
+    "email_password_required": "សូមបញ្ចូលទាំងអ៊ីមែល និងពាក្យសម្ងាត់។",
+    "invalid_credentials": "ព័ត៌មានសម្ងាត់ដែលបានផ្តល់ឱ្យមិនត្រឹមត្រូវទេ។"
   },
   "navigation": {
     "dashboard": "ផ្ទាំងគ្រប់គ្រង",
