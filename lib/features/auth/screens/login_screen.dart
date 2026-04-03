@@ -52,7 +52,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         setState(() {
           String rawError = e.toString().replaceAll('Exception: ', '');
-          if (rawError.toLowerCase().contains('provided credentials are incorrect')) {
+          if (rawError.toLowerCase().contains('provided credentials are incorrect') || rawError.toLowerCase().contains('invalid email or password')) {
             _errorMessage = 'login.invalid_credentials'.tr();
           } else {
             _errorMessage = rawError;

@@ -27,8 +27,18 @@ class AuthRepository {
 
       return token as String;
     } on DioException catch (e) {
-      if (e.response?.statusCode == 401 || e.response?.statusCode == 422) {
-         throw Exception('Invalid email or password');
+      if (e.response != null && e.response?.data != null) {
+        final data = e.response?.data;
+        if (data is Map) {
+          if (data.containsKey('errors')) {
+            final errors = data['errors'] as Map<String, dynamic>;
+            final firstError = errors.values.first[0];
+            throw Exception(firstError.toString());
+          }
+          if (data.containsKey('message')) {
+            throw Exception(data['message']);
+          }
+        }
       }
       throw Exception(e.message ?? 'An unknown error occurred');
     } catch (e) {

@@ -16,7 +16,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text('settings.title'.tr()),
       ),
       body: SingleChildScrollView(
         child: Column(
