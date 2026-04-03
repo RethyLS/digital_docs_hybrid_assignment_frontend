@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/auth/auth_provider.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/utils/dialog_utils.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_button.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_text_field.dart';
@@ -16,7 +17,6 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLoading = false;
   bool _obscurePassword = true;
 
   @override
@@ -37,8 +37,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    setState(() => _isLoading = true);
-    
+    DialogUtils.showLoadingDialog(context, message: 'Authenticating...');
+
     try {
       await ref.read(authProvider.notifier).login(
         _emailController.text.trim(),
@@ -46,7 +46,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       );
       // The router will automatically handle the redirect to dashboard
       // because authProvider state changes to true.
+      if (mounted) DialogUtils.hideLoadingDialog(context);
     } catch (e) {
+      if (mounted) DialogUtils.hideLoadingDialog(context);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -55,17 +58,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         );
       }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -93,7 +92,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    
+
                     // Email Field
                     CustomTextField(
                       label: 'Email Address',
@@ -102,7 +101,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 20),
-                    
+
                     // Password Field
                     CustomTextField(
                       label: 'Password',
@@ -123,12 +122,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    
+
                     // Login Button
                     CustomButton(
                       text: 'Login',
                       onPressed: _handleLogin,
-                      isLoading: _isLoading,
                     ),
                   ],
                 ),
