@@ -76,10 +76,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               CustomCard(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Image.asset(
+                      'assets/images/logo1.png',
+                      height: 80,
+                    ),
+                    const SizedBox(height: 24),
                     Text(
                       'Sign In',
+                      textAlign: TextAlign.center,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -87,6 +93,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'Access the HR Document System',
+                      textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
@@ -125,7 +132,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                     // Login Button
                     CustomButton(
-                      text: 'Login',
+                      text: 'Sign In',
                       onPressed: _handleLogin,
                     ),
                   ],
