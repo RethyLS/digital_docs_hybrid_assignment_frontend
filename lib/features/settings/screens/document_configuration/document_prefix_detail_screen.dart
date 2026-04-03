@@ -164,9 +164,12 @@ class _DocumentPrefixDetailScreenState extends ConsumerState<DocumentPrefixDetai
               ),
               const SizedBox(height: 16),
               CustomCard(
-                child: Text(
-                  prefix.description!,
-                  style: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    prefix.description!,
+                    style: theme.textTheme.bodyMedium?.copyWith(height: 1.5),
+                  ),
                 ),
               ),
             ],

@@ -66,7 +66,9 @@
     "language_sub": "អង់គ្លេស, ខ្មែរ",
     "about": "អំពីកម្មវិធី",
     "about_sub": "កំណែកម្មវិធី និងព័ត៌មាន",
-    "logout": "ចាកចេញ"
+    "logout": "ចាកចេញ",
+    "logout_confirm_title": "ចាកចេញ",
+    "logout_confirm_message": "តើអ្នកពិតជាចង់ចាកចេញមែនទេ?"
   },
   "language_screen": {
     "title": "ភាសា",

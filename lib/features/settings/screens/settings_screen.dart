@@ -96,8 +96,29 @@ class SettingsScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: OutlinedButton.icon(
-                onPressed: () {
-                  ref.read(authProvider.notifier).logout();
+                onPressed: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('settings.logout_confirm_title'.tr()),
+                      content: Text('settings.logout_confirm_message'.tr()),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: Text('common.cancel'.tr()),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
+                          child: Text('settings.logout'.tr()),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (confirm == true) {
+                    ref.read(authProvider.notifier).logout();
+                  }
                 },
                 icon: const HeroIcon(HeroIcons.arrowRightOnRectangle, size: 18),
                 label: Text('settings.logout'.tr()),

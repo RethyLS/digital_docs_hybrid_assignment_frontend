@@ -43,20 +43,20 @@ final dioProvider = Provider<Dio>((ref) {
                 globalResolvedBaseUrl = 'http://10.0.2.2:8000/api';
               } else {
                 // If it fails with ConnectionTimeout or ConnectionRefused, we are on a physical device
-                globalResolvedBaseUrl = 'http://127.0.0.1:8000/api';
+                // Since you are using Wireless ADB, we must hit your PC's actual Wi-Fi IP address instead of localhost.
+                globalResolvedBaseUrl = 'http://192.168.1.103:8000/api';
               }
-            } catch (e) {
+              } catch (e) {
               // Any other unknown error -> fallback to physical device 
+              globalResolvedBaseUrl = 'http://192.168.1.103:8000/api';
+              }
+              } else {
+              // iOS, Web, and Desktop
               globalResolvedBaseUrl = 'http://127.0.0.1:8000/api';
-            }
-          } else {
-            // iOS, Web, and Desktop always use 127.0.0.1
-            globalResolvedBaseUrl = 'http://127.0.0.1:8000/api';
-          }
-        }
-        
-        options.baseUrl = globalResolvedBaseUrl!;
+              }
+              }
 
+              options.baseUrl = globalResolvedBaseUrl!;
         final sharedPrefs = await ref.read(sharedPrefsProvider.future);
         final token = sharedPrefs.getString('auth_token');
         if (token != null) {
