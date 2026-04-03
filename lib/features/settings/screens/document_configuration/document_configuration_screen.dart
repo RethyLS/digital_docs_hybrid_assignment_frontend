@@ -103,6 +103,13 @@ class _DocumentConfigurationScreenState extends ConsumerState<DocumentConfigurat
     return Scaffold(
       appBar: AppBar(
         title: const Text('Document Configuration'),
+        actions: [
+          IconButton(
+            icon: const HeroIcon(HeroIcons.plus, size: 24),
+            onPressed: () => context.push('/document-configuration/add'),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: Column(
         children: [
@@ -243,11 +250,6 @@ class _DocumentConfigurationScreenState extends ConsumerState<DocumentConfigurat
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/document-configuration/add'),
-        backgroundColor: theme.colorScheme.primary,
-        child: const HeroIcon(HeroIcons.plus, color: Colors.white),
       ),
     );
   }
