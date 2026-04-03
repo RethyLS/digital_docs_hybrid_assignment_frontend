@@ -105,7 +105,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: primaryColor, width: 1.5),
         ),
-        hintStyle: TextStyle(color: textSecondaryLight.withOpacity(0.5)),
+        hintStyle: TextStyle(
+          color: textSecondaryLight.withValues(alpha: 0.5),
+          fontWeight: FontWeight.normal,
+        ),
       ),
       dividerTheme: const DividerThemeData(
         color: borderLight,
@@ -200,7 +203,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: primaryColor, width: 1.5),
         ),
-        hintStyle: TextStyle(color: textSecondaryDark.withOpacity(0.5)),
+        hintStyle: TextStyle(
+          color: textSecondaryDark.withValues(alpha: 0.5),
+          fontWeight: FontWeight.normal,
+        ),
       ),
       dividerTheme: const DividerThemeData(
         color: borderDark,

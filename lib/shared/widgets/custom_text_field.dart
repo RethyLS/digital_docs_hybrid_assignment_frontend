@@ -42,8 +42,15 @@ class CustomTextField extends StatelessWidget {
           keyboardType: keyboardType,
           validator: validator,
           maxLines: maxLines,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.normal,
+          ),
           decoration: InputDecoration(
             hintText: hintText,
+            hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+              fontWeight: FontWeight.normal,
+            ),
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
           ),
