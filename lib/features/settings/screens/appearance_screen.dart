@@ -82,29 +82,40 @@ class AppearanceScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final isSelected = value == currentValue;
 
-    return ListTile(
-      leading: HeroIcon(
-        icon,
-        color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurface.withOpacity(0.5),
-      ),
-      title: Text(
-        title,
-        style: theme.textTheme.bodyLarge?.copyWith(
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+    return Container(
+      decoration: BoxDecoration(
+        color: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.05) : Colors.transparent,
+        border: Border(
+          left: BorderSide(
+            color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+            width: 4,
+          ),
         ),
       ),
-      trailing: Switch.adaptive(
-        value: isSelected,
-        activeColor: theme.colorScheme.primary,
-        onChanged: (bool newValue) {
-          if (newValue) {
-            ref.read(themeProvider.notifier).setThemeMode(value);
-          }
+      child: ListTile(
+        leading: HeroIcon(
+          icon,
+          color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurface.withValues(alpha: 0.5),
+        ),
+        title: Text(
+          title,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            color: isSelected ? theme.colorScheme.primary : null,
+          ),
+        ),
+        trailing: isSelected ? Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primary,
+            shape: BoxShape.circle,
+          ),
+          child: const HeroIcon(HeroIcons.check, size: 16, color: Colors.white),
+        ) : null,
+        onTap: () {
+          ref.read(themeProvider.notifier).setThemeMode(value);
         },
       ),
-      onTap: () {
-        ref.read(themeProvider.notifier).setThemeMode(value);
-      },
     );
   }
 }
