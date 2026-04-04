@@ -115,6 +115,7 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
         branchId: _selectedBranchId,
         categoryId: _selectedCategoryId,
         prefixId: _selectedPrefixId,
+        employeeId: _selectedEmployeeId,
         status: _selectedStatus,
       );
 
