@@ -156,7 +156,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                 children: [
                   _buildDetailRow(context, HeroIcons.buildingOffice, 'Branch', document.branch?.name ?? 'N/A'),
                   const Divider(),
-                  _buildDetailRow(context, HeroIcons.calendar, 'Created At', DateFormat('MMM dd, yyyy HH:mm').format(document.createdAt)),
+                  _buildDetailRow(context, HeroIcons.calendar, 'Created At', document.createdAt != null ? DateFormat('MMM dd, yyyy HH:mm').format(document.createdAt!) : 'N/A'),
                   const Divider(),
                   _buildDetailRow(
                     context, 

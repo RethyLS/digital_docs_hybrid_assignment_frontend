@@ -151,10 +151,9 @@ class DashboardScreen extends ConsumerWidget {
                         ),
                         subtitle: Text(doc.documentCode ?? 'NO-CODE'),
                         trailing: Text(
-                          DateFormat('MMM dd, yyyy').format(doc.createdAt),
+                          doc.createdAt != null ? DateFormat('MMM dd, yyyy').format(doc.createdAt!) : 'N/A',
                           style: theme.textTheme.bodySmall,
-                        ),
-                        onTap: () => context.go('/documents'),
+                        ),                        onTap: () => context.go('/documents'),
                       );
                     },
                   ),

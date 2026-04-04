@@ -12,7 +12,7 @@ class Document {
   final int? employeeId;
   final int? documentCategoryId;
   final int? documentPrefixId;
-  final int createdBy;
+  final int? createdBy;
   final int? updatedBy;
   final String? documentCode;
   final String? verificationToken;
@@ -33,8 +33,8 @@ class Document {
   final bool isExpired;
   final Category? category;
   final Branch? branch;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
   final DateTime? deletedAt;
 
   Document({
@@ -44,7 +44,7 @@ class Document {
     this.employeeId,
     this.documentCategoryId,
     this.documentPrefixId,
-    required this.createdBy,
+    this.createdBy,
     this.updatedBy,
     this.documentCode,
     this.verificationToken,
@@ -65,8 +65,8 @@ class Document {
     this.isExpired = false,
     this.category,
     this.branch,
-    required this.createdAt,
-    required this.updatedAt,
+    this.createdAt,
+    this.updatedAt,
     this.deletedAt,
   });
 
