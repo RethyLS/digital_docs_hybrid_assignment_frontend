@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/api/api_client.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/core/utils/image_utils.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/auth/repositories/auth_repository.dart';
 
 final authProvider = NotifierProvider<AuthNotifier, bool>(() {
@@ -38,6 +39,10 @@ class AuthNotifier extends Notifier<bool> {
   Future<void> logout() async {
     final sharedPrefs = await ref.read(sharedPrefsProvider.future);
     await sharedPrefs.remove('auth_token');
+    
+    // Clear dynamically resolved URLs to force a fresh ping check if they log back in
+    globalResolvedBaseUrl = null;
+    
     state = false;
   }
 }
