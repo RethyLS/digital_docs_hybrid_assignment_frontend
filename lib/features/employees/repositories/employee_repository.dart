@@ -38,6 +38,15 @@ class EmployeeRepository {
     }
   }
 
+  Future<Employee> getEmployee(int id) async {
+    try {
+      final response = await _dio.get('/employees/$id');
+      return Employee.fromJson(response.data['data'] ?? response.data);
+    } catch (e) {
+      throw Exception('Failed to load employee details: $e');
+    }
+  }
+
   Future<List<Branch>> getBranches() async {
     try {
       final response = await _dio.get('/branches', queryParameters: {'per_page': 100});

@@ -7,6 +7,8 @@ import 'package:hybrid_digital_docs_assignment_frontend/features/employees/provi
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/repositories/employee_repository.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 
+import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/skeleton.dart';
+
 class EmployeeDetailScreen extends ConsumerStatefulWidget {
   final Employee employee;
 
@@ -18,6 +20,34 @@ class EmployeeDetailScreen extends ConsumerStatefulWidget {
 
 class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
   bool _isDeleting = false;
+  Employee? _fullEmployee;
+  bool _isLoadingDetails = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchFullDetails();
+  }
+
+  Future<void> _fetchFullDetails() async {
+    try {
+      final repo = ref.read(employeeRepositoryProvider);
+      final details = await repo.getEmployee(widget.employee.id);
+      if (mounted) {
+        setState(() {
+          _fullEmployee = details;
+          _isLoadingDetails = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _fullEmployee = widget.employee; // Fallback to list data
+          _isLoadingDetails = false;
+        });
+      }
+    }
+  }
 
   Future<void> _deleteEmployee() async {
     final confirm = await showDialog<bool>(
@@ -75,7 +105,7 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final employee = widget.employee;
+    final employee = _fullEmployee ?? widget.employee;
 
     return Scaffold(
       appBar: AppBar(
@@ -179,7 +209,16 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
               style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            if (employee.assignedDocuments == null || employee.assignedDocuments!.isEmpty)
+            if (_isLoadingDetails)
+              const CustomCard(
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              )
+            else if (_fullEmployee?.assignedDocuments == null || _fullEmployee!.assignedDocuments!.isEmpty)
               CustomCard(
                 child: Center(
                   child: Text(
@@ -194,10 +233,10 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
               ListView.separated(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: employee.assignedDocuments!.length,
+                itemCount: _fullEmployee!.assignedDocuments!.length,
                 separatorBuilder: (context, index) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
-                  final doc = employee.assignedDocuments![index];
+                  final doc = _fullEmployee!.assignedDocuments![index];
                   return CustomCard(
                     onTap: () => context.push('/documents/detail', extra: doc),
                     padding: const EdgeInsets.all(12),
