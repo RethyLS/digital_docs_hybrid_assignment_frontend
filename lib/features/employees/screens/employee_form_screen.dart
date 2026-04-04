@@ -12,6 +12,8 @@ import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_bu
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_text_field.dart';
 
+import 'package:hybrid_digital_docs_assignment_frontend/shared/utils/dialog_utils.dart';
+
 class EmployeeFormScreen extends ConsumerStatefulWidget {
   final Employee? employee;
 
@@ -33,7 +35,6 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
   int? _selectedBranchId;
   int? _selectedDepartmentId;
   DateTime? _selectedJoinDate;
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -107,7 +108,7 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
       return;
     }
 
-    setState(() => _isLoading = true);
+    DialogUtils.showLoadingDialog(context, message: 'Saving...');
 
     final phoneText = _phoneController.text.trim();
     final positionText = _positionController.text.trim();
@@ -136,6 +137,8 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
       } else {
         success = await repo.updateEmployee(employee.id, employee);
       }
+      
+      if (mounted) DialogUtils.hideLoadingDialog(context);
 
       if (success && mounted) {
         ref.invalidate(employeesProvider);
@@ -148,6 +151,8 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
         context.go('/employees');
       }
     } catch (e) {
+      if (mounted) DialogUtils.hideLoadingDialog(context);
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -155,10 +160,6 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
             backgroundColor: Colors.redAccent,
           ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
       }
     }
   }
@@ -397,9 +398,8 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: CustomButton(
-                    onPressed: _isLoading ? () {} : _submitForm,
+                    onPressed: _submitForm,
                     text: isEditing ? 'Update Employee' : 'Save Employee',
-                    isLoading: _isLoading,
                   ),
                 ),
               ],

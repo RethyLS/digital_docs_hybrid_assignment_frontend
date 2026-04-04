@@ -14,6 +14,8 @@ import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_te
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/models/employee.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/employees/repositories/employee_repository.dart';
 
+import 'package:hybrid_digital_docs_assignment_frontend/shared/utils/dialog_utils.dart';
+
 class UploadDocumentScreen extends ConsumerStatefulWidget {
   const UploadDocumentScreen({super.key});
 
@@ -26,7 +28,6 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
   final _descriptionController = TextEditingController();
   String? _filePath;
   String? _fileName;
-  bool _isLoading = false;
 
   List<Branch> _branches = [];
   List<Category> _categories = [];
@@ -115,7 +116,7 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
       return;
     }
 
-    setState(() => _isLoading = true);
+    DialogUtils.showLoadingDialog(context, message: 'Uploading...');
 
     try {
       final repo = ref.read(documentRepositoryProvider);
@@ -129,6 +130,8 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
         employeeId: _selectedEmployeeId,
         status: _selectedStatus,
       );
+
+      if (mounted) DialogUtils.hideLoadingDialog(context);
 
       if (success && mounted) {
         ref.invalidate(documentsProvider); // Refresh document list
@@ -148,6 +151,8 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
         );
       }
     } catch (e) {
+      if (mounted) DialogUtils.hideLoadingDialog(context);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -155,10 +160,6 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
             backgroundColor: Colors.redAccent,
           ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
       }
     }
   }
@@ -422,7 +423,6 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
                   CustomButton(
                     text: 'Upload Document',
                     onPressed: _uploadFile,
-                    isLoading: _isLoading,
                   ),
                 ],
               ),
@@ -433,4 +433,5 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
     );
   }
 }
+
 

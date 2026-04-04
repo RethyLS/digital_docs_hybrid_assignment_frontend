@@ -9,6 +9,8 @@ import 'package:hybrid_digital_docs_assignment_frontend/features/users/providers
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_button.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_text_field.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/skeleton.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/utils/dialog_utils.dart';
 
 class MyProfileScreen extends ConsumerStatefulWidget {
   const MyProfileScreen({super.key});
@@ -102,7 +104,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
   Future<void> _submitForm(int userId) async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    DialogUtils.showLoadingDialog(context, message: 'Saving...');
 
     final payload = {
       'first_name': _firstNameController.text.trim(),
@@ -115,6 +117,8 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
     try {
       final success = await ref.read(userProfileProvider.notifier).updateProfile(userId, payload);
       
+      if (mounted) DialogUtils.hideLoadingDialog(context);
+
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -124,14 +128,11 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
         );
       }
     } catch (e) {
+      if (mounted) DialogUtils.hideLoadingDialog(context);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.toString()), backgroundColor: Colors.redAccent),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
       }
     }
   }
@@ -272,8 +273,7 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
                           width: double.infinity,
                           child: CustomButton(
                             text: 'profile.save_changes'.tr(),
-                            isLoading: _isLoading,
-                            onPressed: _isLoading ? () {} : () => _submitForm(user.id),
+                            onPressed: () => _submitForm(user.id),
                           ),
                         ),
                       ],
@@ -290,3 +290,4 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
     );
   }
 }
+

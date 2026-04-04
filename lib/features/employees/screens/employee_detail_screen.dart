@@ -8,6 +8,7 @@ import 'package:hybrid_digital_docs_assignment_frontend/features/employees/repos
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/skeleton.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/utils/dialog_utils.dart';
 
 class EmployeeDetailScreen extends ConsumerStatefulWidget {
   final Employee employee;
@@ -19,7 +20,6 @@ class EmployeeDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
-  bool _isDeleting = false;
   Employee? _fullEmployee;
   bool _isLoadingDetails = true;
 
@@ -70,11 +70,13 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
     );
 
     if (confirm == true) {
-      setState(() => _isDeleting = true);
+      DialogUtils.showLoadingDialog(context, message: 'Deleting...');
       try {
         final repo = ref.read(employeeRepositoryProvider);
         final success = await repo.deleteEmployee(widget.employee.id);
         
+        if (mounted) DialogUtils.hideLoadingDialog(context);
+
         if (success && mounted) {
           ref.invalidate(employeesProvider);
           ScaffoldMessenger.of(context).showSnackBar(
@@ -86,6 +88,8 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
           context.go('/employees');
         }
       } catch (e) {
+        if (mounted) DialogUtils.hideLoadingDialog(context);
+        
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -93,10 +97,6 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
               backgroundColor: Colors.redAccent,
             ),
           );
-        }
-      } finally {
-        if (mounted) {
-          setState(() => _isDeleting = false);
         }
       }
     }
@@ -116,10 +116,8 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
             onPressed: () => context.push('/employees/edit', extra: employee),
           ),
           IconButton(
-            icon: _isDeleting 
-              ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
-              : HeroIcon(HeroIcons.trash, size: 24, color: Colors.redAccent.withValues(alpha: 0.8)),
-            onPressed: _isDeleting ? null : _deleteEmployee,
+            icon: HeroIcon(HeroIcons.trash, size: 24, color: Colors.redAccent.withValues(alpha: 0.8)),
+            onPressed: _deleteEmployee,
           ),
           const SizedBox(width: 8),
         ],

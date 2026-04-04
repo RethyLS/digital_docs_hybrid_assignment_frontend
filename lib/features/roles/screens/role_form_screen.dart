@@ -9,6 +9,8 @@ import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_bu
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_text_field.dart';
 
+import 'package:hybrid_digital_docs_assignment_frontend/shared/utils/dialog_utils.dart';
+
 class RoleFormScreen extends ConsumerStatefulWidget {
   final Role? role;
 
@@ -48,7 +50,7 @@ class _RoleFormScreenState extends ConsumerState<RoleFormScreen> {
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    DialogUtils.showLoadingDialog(context, message: 'Saving...');
     final isEditing = widget.role != null;
 
     try {
@@ -70,6 +72,8 @@ class _RoleFormScreenState extends ConsumerState<RoleFormScreen> {
         );
       }
 
+      if (mounted) DialogUtils.hideLoadingDialog(context);
+
       if (success && mounted) {
         ref.invalidate(rolesProvider);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -88,6 +92,8 @@ class _RoleFormScreenState extends ConsumerState<RoleFormScreen> {
         }
       }
     } catch (e) {
+      if (mounted) DialogUtils.hideLoadingDialog(context);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -95,10 +101,6 @@ class _RoleFormScreenState extends ConsumerState<RoleFormScreen> {
             backgroundColor: Colors.redAccent,
           ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
       }
     }
   }
@@ -201,7 +203,6 @@ class _RoleFormScreenState extends ConsumerState<RoleFormScreen> {
               CustomButton(
                 text: isEditing ? 'Update Role' : 'Save Role',
                 onPressed: _submitForm,
-                isLoading: _isLoading,
                 icon: isEditing ? HeroIcons.check : HeroIcons.plus,
               ),
               const SizedBox(height: 32),

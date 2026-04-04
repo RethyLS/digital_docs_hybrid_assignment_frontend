@@ -7,6 +7,8 @@ import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_bu
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_text_field.dart';
 
+import 'package:hybrid_digital_docs_assignment_frontend/shared/utils/dialog_utils.dart';
+
 class SecurityScreen extends ConsumerStatefulWidget {
   const SecurityScreen({super.key});
 
@@ -40,7 +42,7 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
       return;
     }
 
-    setState(() => _isLoading = true);
+    DialogUtils.showLoadingDialog(context, message: 'Saving...');
 
     try {
       final success = await ref.read(userProfileProvider.notifier).updatePassword(
@@ -48,6 +50,8 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
         _newPasswordController.text,
         _confirmPasswordController.text,
       );
+
+      if (mounted) DialogUtils.hideLoadingDialog(context);
 
       if (success && mounted) {
         _oldPasswordController.clear();
@@ -61,14 +65,12 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
         );
       }
     } catch (e) {
+      if (mounted) DialogUtils.hideLoadingDialog(context);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.toString()), backgroundColor: Colors.redAccent),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
       }
     }
   }
@@ -131,8 +133,7 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
                       width: double.infinity,
                       child: CustomButton(
                         text: 'security_screen.update_password'.tr(),
-                        isLoading: _isLoading,
-                        onPressed: _isLoading ? () {} : () => _submitForm(),
+                        onPressed: () => _submitForm(),
                       ),
                     ),
                   ],

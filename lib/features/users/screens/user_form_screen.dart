@@ -11,6 +11,7 @@ import 'package:hybrid_digital_docs_assignment_frontend/features/roles/providers
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_button.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_text_field.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/utils/dialog_utils.dart';
 
 class UserFormScreen extends ConsumerStatefulWidget {
   final User? user;
@@ -30,7 +31,6 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
 
-  bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   Role? _selectedRole;
@@ -71,7 +71,7 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
       return;
     }
 
-    setState(() => _isLoading = true);
+    DialogUtils.showLoadingDialog(context, message: 'Saving...');
 
     final user = User(
       id: widget.user?.id ?? 0,
@@ -96,6 +96,8 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
       } else {
         success = await repo.updateUser(user.id, user);
       }
+      
+      if (mounted) DialogUtils.hideLoadingDialog(context);
 
       if (success && mounted) {
         ref.invalidate(usersProvider);
@@ -115,6 +117,8 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
         }
       }
     } catch (e) {
+      if (mounted) DialogUtils.hideLoadingDialog(context);
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -122,10 +126,6 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
             backgroundColor: Colors.redAccent,
           ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
       }
     }
   }
@@ -284,7 +284,6 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
                 CustomButton(
                   text: isEditing ? 'user_management.update_user'.tr() : 'user_management.save_user'.tr(),
                   onPressed: _submitForm,
-                  isLoading: _isLoading,
                   icon: isEditing ? HeroIcons.check : HeroIcons.plus,
                 ),
               ],
@@ -295,3 +294,4 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
     );
   }
 }
+

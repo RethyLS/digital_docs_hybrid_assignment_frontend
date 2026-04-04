@@ -7,6 +7,7 @@ import 'package:hybrid_digital_docs_assignment_frontend/features/users/models/us
 import 'package:hybrid_digital_docs_assignment_frontend/features/users/providers/user_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/users/repositories/user_repository.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/utils/dialog_utils.dart';
 
 class UserDetailScreen extends ConsumerStatefulWidget {
   final User user;
@@ -41,11 +42,13 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
     );
 
     if (confirm == true) {
-      setState(() => _isDeleting = true);
+      DialogUtils.showLoadingDialog(context, message: 'Deleting...');
       try {
         final repo = ref.read(userRepositoryProvider);
         final success = await repo.deleteUser(widget.user.id);
         
+        if (mounted) DialogUtils.hideLoadingDialog(context);
+
         if (success && mounted) {
           ref.invalidate(usersProvider);
           ScaffoldMessenger.of(context).showSnackBar(
@@ -57,6 +60,8 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
           context.pop();
         }
       } catch (e) {
+        if (mounted) DialogUtils.hideLoadingDialog(context);
+        
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -64,10 +69,6 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
               backgroundColor: Colors.redAccent,
             ),
           );
-        }
-      } finally {
-        if (mounted) {
-          setState(() => _isDeleting = false);
         }
       }
     }
@@ -87,10 +88,8 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
             onPressed: () => context.push('/users/edit', extra: user),
           ),
           IconButton(
-            icon: _isDeleting 
-              ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
-              : HeroIcon(HeroIcons.trash, size: 24, color: Colors.redAccent.withValues(alpha: 0.8)),
-            onPressed: _isDeleting ? null : _deleteUser,
+            icon: HeroIcon(HeroIcons.trash, size: 24, color: Colors.redAccent.withValues(alpha: 0.8)),
+            onPressed: _deleteUser,
           ),
           const SizedBox(width: 8),
         ],

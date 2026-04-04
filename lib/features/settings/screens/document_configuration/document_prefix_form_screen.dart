@@ -8,6 +8,7 @@ import 'package:hybrid_digital_docs_assignment_frontend/shared/models/document_p
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_button.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_text_field.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/utils/dialog_utils.dart';
 
 class DocumentPrefixFormScreen extends ConsumerStatefulWidget {
   final DocumentPrefix? prefix;
@@ -25,8 +26,6 @@ class _DocumentPrefixFormScreenState extends ConsumerState<DocumentPrefixFormScr
   late TextEditingController _separatorController;
   late TextEditingController _descriptionController;
   bool _isDefault = false;
-
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -50,7 +49,7 @@ class _DocumentPrefixFormScreenState extends ConsumerState<DocumentPrefixFormScr
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+    DialogUtils.showLoadingDialog(context, message: 'Saving...');
     final isEditing = widget.prefix != null;
 
     try {
@@ -73,6 +72,8 @@ class _DocumentPrefixFormScreenState extends ConsumerState<DocumentPrefixFormScr
       } else {
         success = await repo.updatePrefix(widget.prefix!.id, newPrefix);
       }
+      
+      if (mounted) DialogUtils.hideLoadingDialog(context);
 
       if (success && mounted) {
         ref.invalidate(documentPrefixesProvider);
@@ -90,6 +91,8 @@ class _DocumentPrefixFormScreenState extends ConsumerState<DocumentPrefixFormScr
         }
       }
     } catch (e) {
+      if (mounted) DialogUtils.hideLoadingDialog(context);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -97,10 +100,6 @@ class _DocumentPrefixFormScreenState extends ConsumerState<DocumentPrefixFormScr
             backgroundColor: Colors.redAccent,
           ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
       }
     }
   }
@@ -180,7 +179,6 @@ class _DocumentPrefixFormScreenState extends ConsumerState<DocumentPrefixFormScr
               CustomButton(
                 text: isEditing ? 'Update Prefix' : 'Save Prefix',
                 onPressed: _submitForm,
-                isLoading: _isLoading,
                 icon: isEditing ? HeroIcons.check : HeroIcons.plus,
               ),
             ],

@@ -7,6 +7,8 @@ import 'package:hybrid_digital_docs_assignment_frontend/features/settings/screen
 import 'package:hybrid_digital_docs_assignment_frontend/shared/models/document_prefix.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 
+import 'package:hybrid_digital_docs_assignment_frontend/shared/utils/dialog_utils.dart';
+
 class DocumentPrefixDetailScreen extends ConsumerStatefulWidget {
   final DocumentPrefix prefix;
 
@@ -40,10 +42,13 @@ class _DocumentPrefixDetailScreenState extends ConsumerState<DocumentPrefixDetai
     );
 
     if (confirm == true) {
-      setState(() => _isDeleting = true);
+      DialogUtils.showLoadingDialog(context, message: 'Deleting...');
       try {
         final repo = ref.read(documentPrefixRepositoryProvider);
         await repo.deletePrefix(widget.prefix.id);
+        
+        if (mounted) DialogUtils.hideLoadingDialog(context);
+
         ref.invalidate(documentPrefixesProvider);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -52,14 +57,12 @@ class _DocumentPrefixDetailScreenState extends ConsumerState<DocumentPrefixDetai
           context.pop();
         }
       } catch (e) {
+        if (mounted) DialogUtils.hideLoadingDialog(context);
+        
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.redAccent),
           );
-        }
-      } finally {
-        if (mounted) {
-          setState(() => _isDeleting = false);
         }
       }
     }
@@ -80,10 +83,8 @@ class _DocumentPrefixDetailScreenState extends ConsumerState<DocumentPrefixDetai
           ),
           if (prefix.isDefault != true)
             IconButton(
-              icon: _isDeleting 
-                ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
-                : HeroIcon(HeroIcons.trash, size: 24, color: Colors.redAccent.withValues(alpha: 0.8)),
-              onPressed: _isDeleting ? null : _deletePrefix,
+              icon: HeroIcon(HeroIcons.trash, size: 24, color: Colors.redAccent.withValues(alpha: 0.8)),
+              onPressed: _deletePrefix,
             ),
           const SizedBox(width: 8),
         ],

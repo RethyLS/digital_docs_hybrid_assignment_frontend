@@ -6,6 +6,7 @@ import 'package:hybrid_digital_docs_assignment_frontend/features/roles/providers
 import 'package:hybrid_digital_docs_assignment_frontend/features/roles/repositories/role_repository.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/users/models/role.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/utils/dialog_utils.dart';
 
 class RoleDetailScreen extends ConsumerStatefulWidget {
   final Role role;
@@ -40,11 +41,13 @@ class _RoleDetailScreenState extends ConsumerState<RoleDetailScreen> {
     );
 
     if (confirm == true) {
-      setState(() => _isDeleting = true);
+      DialogUtils.showLoadingDialog(context, message: 'Deleting...');
       try {
         final repo = ref.read(roleRepositoryProvider);
         final success = await repo.deleteRole(widget.role.id);
         
+        if (mounted) DialogUtils.hideLoadingDialog(context);
+
         if (success && mounted) {
           ref.invalidate(rolesProvider);
           ScaffoldMessenger.of(context).showSnackBar(
@@ -56,6 +59,7 @@ class _RoleDetailScreenState extends ConsumerState<RoleDetailScreen> {
           context.pop();
         }
       } catch (e) {
+        if (mounted) DialogUtils.hideLoadingDialog(context);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -63,10 +67,6 @@ class _RoleDetailScreenState extends ConsumerState<RoleDetailScreen> {
               backgroundColor: Colors.redAccent,
             ),
           );
-        }
-      } finally {
-        if (mounted) {
-          setState(() => _isDeleting = false);
         }
       }
     }
@@ -86,10 +86,8 @@ class _RoleDetailScreenState extends ConsumerState<RoleDetailScreen> {
             onPressed: () => context.push('/roles/edit', extra: role),
           ),
           IconButton(
-            icon: _isDeleting 
-              ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
-              : HeroIcon(HeroIcons.trash, size: 24, color: Colors.redAccent.withValues(alpha: 0.8)),
-            onPressed: _isDeleting ? null : _deleteRole,
+            icon: HeroIcon(HeroIcons.trash, size: 24, color: Colors.redAccent.withValues(alpha: 0.8)),
+            onPressed: _deleteRole,
           ),
           const SizedBox(width: 8),
         ],
