@@ -89,7 +89,7 @@ class _DocumentsScreenState extends ConsumerState<DocumentsScreen> {
                       ref.read(documentSearchQueryProvider.notifier).updateQuery(val);
                     },
                     decoration: InputDecoration(
-                      hintText: 'Search documents...',
+                      hintText: 'documents.search_hint'.tr(),
                       fillColor: Colors.transparent,
                       prefixIcon: const Padding(
                         padding: EdgeInsets.all(12.0),

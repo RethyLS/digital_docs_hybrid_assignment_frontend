@@ -91,7 +91,7 @@ class _EmployeesScreenState extends ConsumerState<EmployeesScreen> {
                       ref.read(employeeSearchQueryProvider.notifier).updateQuery(val);
                     },
                     decoration: InputDecoration(
-                      hintText: 'Search employees...',
+                      hintText: 'employees.search_hint'.tr(),
                       fillColor: Colors.transparent,
                       prefixIcon: const Padding(
                         padding: EdgeInsets.all(12.0),

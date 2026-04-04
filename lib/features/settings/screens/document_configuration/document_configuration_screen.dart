@@ -103,7 +103,7 @@ class _DocumentConfigurationScreenState extends ConsumerState<DocumentConfigurat
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Document Configuration'),
+        title: Text('document_config.title'.tr()),
         actions: [
           IconButton(
             icon: const HeroIcon(HeroIcons.plus, size: 24),
@@ -131,7 +131,7 @@ class _DocumentConfigurationScreenState extends ConsumerState<DocumentConfigurat
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: 'Search prefixes...',
+                  hintText: 'document_config.search_hint'.tr(),
                   fillColor: Colors.transparent,
                   prefixIcon: const Padding(
                     padding: EdgeInsets.all(12.0),

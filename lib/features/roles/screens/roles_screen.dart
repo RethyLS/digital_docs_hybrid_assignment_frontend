@@ -78,7 +78,7 @@ class _RolesScreenState extends ConsumerState<RolesScreen> {
                   ref.read(roleSearchQueryProvider.notifier).updateQuery(val);
                 },
                 decoration: InputDecoration(
-                  hintText: 'Search roles...',
+                  hintText: 'roles.search_hint'.tr(),
                   fillColor: Colors.transparent,
                   prefixIcon: const Padding(
                     padding: EdgeInsets.all(12.0),

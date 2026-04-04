@@ -86,7 +86,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                       ref.read(userSearchQueryProvider.notifier).updateQuery(val);
                     },
                     decoration: InputDecoration(
-                      hintText: 'Search users...',
+                      hintText: 'users.search_hint'.tr(),
                       fillColor: Colors.transparent,
                       prefixIcon: const Padding(
                         padding: EdgeInsets.all(12.0),
