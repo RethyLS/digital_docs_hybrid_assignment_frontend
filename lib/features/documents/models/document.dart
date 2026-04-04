@@ -23,7 +23,7 @@ class Document {
   final String? visibility;
   final String? fileName;
   final String? fileType;
-  final int fileSize;
+  final int? fileSize;
   final String? mimeType;
   final String? filePath;
   final String? fileUrl;
@@ -55,7 +55,7 @@ class Document {
     this.visibility,
     this.fileName,
     this.fileType,
-    required this.fileSize,
+    this.fileSize,
     this.mimeType,
     this.filePath,
     this.fileUrl,
