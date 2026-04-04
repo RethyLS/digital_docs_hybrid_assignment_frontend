@@ -16,48 +16,46 @@ class SecurityScreen extends ConsumerStatefulWidget {
 
 class _SecurityScreenState extends ConsumerState<SecurityScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _oldPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+
   bool _isLoading = false;
 
   @override
   void dispose() {
+    _oldPasswordController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _submitForm(User user) async {
+  Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
 
     if (_newPasswordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match'), backgroundColor: Colors.redAccent),
+        SnackBar(content: Text('security_screen.password_mismatch'.tr()), backgroundColor: Colors.redAccent),
       );
       return;
     }
 
     setState(() => _isLoading = true);
 
-    // The backend validation requires these fields even when updating just the password
-    final payload = {
-      'first_name': user.firstName ?? '',
-      'last_name': user.lastName ?? '',
-      'email': user.email ?? '',
-      'password': _newPasswordController.text,
-      'password_confirmation': _confirmPasswordController.text,
-    };
-
     try {
-      final success = await ref.read(userProfileProvider.notifier).updateProfile(user.id, payload);
-      
+      final success = await ref.read(userProfileProvider.notifier).updatePassword(
+        _oldPasswordController.text,
+        _newPasswordController.text,
+        _confirmPasswordController.text,
+      );
+
       if (success && mounted) {
+        _oldPasswordController.clear();
         _newPasswordController.clear();
         _confirmPasswordController.clear();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password changed successfully'),
+          SnackBar(
+            content: Text('security_screen.password_changed'.tr()),
             backgroundColor: Colors.green,
           ),
         );
@@ -74,7 +72,6 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
       }
     }
   }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -97,6 +94,16 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
                     Text(
                       'security_screen.change_password'.tr(),
                       style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16),
+                    CustomTextField(
+                      label: 'security_screen.old_password'.tr(),
+                      controller: _oldPasswordController,
+                      obscureText: true,
+                      validator: (val) {
+                        if (val == null || val.isEmpty) return 'Required';
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
@@ -125,7 +132,7 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
                       child: CustomButton(
                         text: 'security_screen.update_password'.tr(),
                         isLoading: _isLoading,
-                        onPressed: _isLoading ? () {} : () => _submitForm(user),
+                        onPressed: _isLoading ? () {} : () => _submitForm(),
                       ),
                     ),
                   ],

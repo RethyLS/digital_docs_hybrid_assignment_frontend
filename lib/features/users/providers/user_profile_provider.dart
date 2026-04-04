@@ -14,6 +14,15 @@ class UserProfileNotifier extends AsyncNotifier<User> {
     return repository.getUserProfile();
   }
 
+  Future<bool> updatePassword(String oldPassword, String newPassword, String newPasswordConfirmation) async {
+    try {
+      final repository = ref.read(userProfileRepositoryProvider);
+      return await repository.updatePassword(oldPassword, newPassword, newPasswordConfirmation);
+    } catch (e) {
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
   Future<bool> updateProfile(int userId, Map<String, dynamic> payload) async {
     try {
       final repository = ref.read(userProfileRepositoryProvider);
