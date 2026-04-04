@@ -1,3 +1,4 @@
+import 'package:hybrid_digital_docs_assignment_frontend/features/documents/models/document.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/models/branch.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/models/department.dart';
@@ -20,6 +21,7 @@ class Employee {
   final String? status;
   final Branch? branch;
   final Department? department;
+  final List<Document>? assignedDocuments;
 
   Employee({
     required this.id,
@@ -36,6 +38,7 @@ class Employee {
     this.status,
     this.branch,
     this.department,
+    this.assignedDocuments,
   });
 
   String get fullName => '${firstName ?? ''} ${lastName ?? ''}'.trim();

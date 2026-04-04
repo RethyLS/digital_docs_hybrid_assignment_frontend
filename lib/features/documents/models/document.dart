@@ -9,6 +9,7 @@ class Document {
   final int id;
   final int organizationId;
   final int? branchId;
+  final int? employeeId;
   final int? documentCategoryId;
   final int? documentPrefixId;
   final int createdBy;
@@ -40,6 +41,7 @@ class Document {
     required this.id,
     required this.organizationId,
     this.branchId,
+    this.employeeId,
     this.documentCategoryId,
     this.documentPrefixId,
     required this.createdBy,

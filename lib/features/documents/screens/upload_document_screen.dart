@@ -11,6 +11,8 @@ import 'package:hybrid_digital_docs_assignment_frontend/shared/models/document_p
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_button.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_text_field.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/employees/models/employee.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/features/employees/repositories/employee_repository.dart';
 
 class UploadDocumentScreen extends ConsumerStatefulWidget {
   const UploadDocumentScreen({super.key});
@@ -29,10 +31,12 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
   List<Branch> _branches = [];
   List<Category> _categories = [];
   List<DocumentPrefix> _prefixes = [];
-  
+  List<Employee> _employees = [];
+
   int? _selectedBranchId;
   int? _selectedCategoryId;
   int? _selectedPrefixId;
+  int? _selectedEmployeeId;
   String _selectedStatus = 'published';
 
   @override
@@ -43,19 +47,24 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
 
   Future<void> _loadFormData() async {
     final repo = ref.read(documentRepositoryProvider);
+    final empRepo = ref.read(employeeRepositoryProvider);
+
     final branches = await repo.getBranches();
     final categories = await repo.getCategories();
     final prefixes = await repo.getDocumentPrefixes();
-    
+
+    // Fetch a large list of active employees for the dropdown
+    final employeesData = await empRepo.getEmployees(page: 1, perPage: 100, status: 'active');
+
     if (mounted) {
       setState(() {
         _branches = branches;
         _categories = categories;
         _prefixes = prefixes;
+        _employees = employeesData.data;
       });
     }
   }
-
   @override
   void dispose() {
     _titleController.dispose();
@@ -318,6 +327,45 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
                   ),
                   const SizedBox(height: 16),
                   
+                  // Employee Dropdown
+                  Text(
+                    'Assign to Employee',
+                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: theme.inputDecorationTheme.fillColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<int>(
+                        isExpanded: true,
+                        hint: const Text('Select an Employee (Optional)'),
+                        value: _selectedEmployeeId,
+                        items: [
+                          const DropdownMenuItem<int>(
+                            value: null,
+                            child: Text('None (General Document)'),
+                          ),
+                          ..._employees.map((Employee emp) {
+                            return DropdownMenuItem<int>(
+                              value: emp.id,
+                              child: Text(emp.fullName),
+                            );
+                          }),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedEmployeeId = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
                   // Status Dropdown
                   Text(
                     'Status',

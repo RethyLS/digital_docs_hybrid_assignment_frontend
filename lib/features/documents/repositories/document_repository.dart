@@ -78,6 +78,7 @@ class DocumentRepository {
     int? categoryId,
     int? branchId,
     int? prefixId,
+    int? employeeId,
     String? status,
   }) async {
     try {
@@ -87,6 +88,7 @@ class DocumentRepository {
         if (categoryId != null) 'document_category_id': categoryId,
         if (branchId != null) 'branch_id': branchId,
         if (prefixId != null) 'document_prefix_id': prefixId,
+        if (employeeId != null) 'employee_id': employeeId,
         if (status != null) 'status': status,
         'file': await MultipartFile.fromFile(filePath),
       });

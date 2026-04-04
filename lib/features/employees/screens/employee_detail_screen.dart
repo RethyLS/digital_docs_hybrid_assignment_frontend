@@ -173,7 +173,76 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
                 ],
               ),
             ),
-          ],
+            const SizedBox(height: 24),
+            Text(
+              'Assigned Documents',
+              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            if (employee.assignedDocuments == null || employee.assignedDocuments!.isEmpty)
+              CustomCard(
+                child: Center(
+                  child: Text(
+                    'No documents assigned to this employee.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ),
+              )
+            else
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: employee.assignedDocuments!.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final doc = employee.assignedDocuments![index];
+                  return CustomCard(
+                    onTap: () => context.push('/documents/detail', extra: doc),
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: HeroIcon(
+                            HeroIcons.documentText,
+                            color: theme.colorScheme.primary,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                doc.title ?? doc.fileName ?? 'Unknown Document',
+                                style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                doc.documentCode ?? 'No Code',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        HeroIcon(HeroIcons.chevronRight, size: 20, color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            const SizedBox(height: 24),          ],
         ),
       ),
     );
