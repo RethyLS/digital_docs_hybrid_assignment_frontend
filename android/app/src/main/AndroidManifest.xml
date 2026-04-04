@@ -3,7 +3,7 @@
     <application
         android:label="hybrid_digital_docs_assignment_frontend"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/launcher_icon"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"

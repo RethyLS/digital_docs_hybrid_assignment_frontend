@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/core/theme/theme_provider.dart';
@@ -14,7 +15,7 @@ class AppearanceScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Appearance'),
+        title: Text('settings.appearance'.tr()),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -22,12 +23,12 @@ class AppearanceScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Theme Mode',
+              'appearance.theme_mode'.tr(),
               style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              'Choose how the app looks to you.',
+              'appearance.subtitle'.tr(),
               style: theme.textTheme.bodySmall,
             ),
             const SizedBox(height: 16),
@@ -38,7 +39,7 @@ class AppearanceScreen extends ConsumerWidget {
                   _buildThemeOption(
                     context,
                     ref,
-                    title: 'Light Mode',
+                    title: 'appearance.light_mode'.tr(),
                     icon: HeroIcons.sun,
                     value: ThemeMode.light,
                     currentValue: themeMode,
@@ -47,7 +48,7 @@ class AppearanceScreen extends ConsumerWidget {
                   _buildThemeOption(
                     context,
                     ref,
-                    title: 'Dark Mode',
+                    title: 'appearance.dark_mode'.tr(),
                     icon: HeroIcons.moon,
                     value: ThemeMode.dark,
                     currentValue: themeMode,
@@ -56,7 +57,7 @@ class AppearanceScreen extends ConsumerWidget {
                   _buildThemeOption(
                     context,
                     ref,
-                    title: 'System Default',
+                    title: 'appearance.system_default'.tr(),
                     icon: HeroIcons.cpuChip,
                     value: ThemeMode.system,
                     currentValue: themeMode,

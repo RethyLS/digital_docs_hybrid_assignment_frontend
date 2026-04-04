@@ -121,5 +121,39 @@
     "user_created": "User created successfully",
     "user_updated": "User updated successfully",
     "user_deleted": "User deleted successfully"
+  },
+  "appearance": {
+    "theme_mode": "Theme Mode",
+    "subtitle": "Choose how the app looks to you.",
+    "light_mode": "Light Mode",
+    "dark_mode": "Dark Mode",
+    "system_default": "System Default"
+  },
+  "document_config": {
+    "title": "Document Configuration",
+    "delete_title": "Delete Prefix",
+    "delete_confirm": "Are you sure you want to delete the prefix",
+    "delete_success": "Prefix deleted successfully",
+    "create_success": "Prefix created successfully",
+    "update_success": "Prefix updated successfully",
+    "no_prefixes": "No prefixes found.",
+    "no_results": "No results matching",
+    "search_hint": "Search prefixes...",
+    "unknown": "Unknown",
+    "default_badge": "DEFAULT",
+    "format_label": "Format:",
+    "add_prefix": "Add Prefix",
+    "edit_prefix": "Edit Prefix",
+    "prefix_config": "Prefix Configuration",
+    "name": "Name *",
+    "prefix_value": "Prefix Value *",
+    "separator": "Separator",
+    "description": "Description",
+    "set_default": "Set as Default",
+    "set_default_sub": "New documents will use this prefix automatically",
+    "save_prefix": "Save Prefix",
+    "update_prefix": "Update Prefix",
+    "prefix_details": "Prefix Details"
   }
 }
+
