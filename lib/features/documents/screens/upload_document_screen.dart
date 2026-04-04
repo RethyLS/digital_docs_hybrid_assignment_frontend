@@ -49,20 +49,31 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
     final repo = ref.read(documentRepositoryProvider);
     final empRepo = ref.read(employeeRepositoryProvider);
 
-    final branches = await repo.getBranches();
-    final categories = await repo.getCategories();
-    final prefixes = await repo.getDocumentPrefixes();
+    try {
+      final branches = await repo.getBranches();
+      final categories = await repo.getCategories();
+      final prefixes = await repo.getDocumentPrefixes();
 
-    // Fetch a large list of active employees for the dropdown
-    final employeesData = await empRepo.getEmployees(page: 1, perPage: 100, status: 'active');
+      // Fetch a large list of active employees for the dropdown
+      final employeesData = await empRepo.getEmployees(page: 1, perPage: 100, status: 'active');
 
-    if (mounted) {
-      setState(() {
-        _branches = branches;
-        _categories = categories;
-        _prefixes = prefixes;
-        _employees = employeesData.data;
-      });
+      if (mounted) {
+        setState(() {
+          _branches = branches;
+          _categories = categories;
+          _prefixes = prefixes;
+          _employees = employeesData.data;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load form data: ${e.toString().replaceAll('Exception: ', '')}'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
     }
   }
   @override
