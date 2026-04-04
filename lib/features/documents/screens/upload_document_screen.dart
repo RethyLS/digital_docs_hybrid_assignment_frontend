@@ -135,30 +135,24 @@ class _UploadDocumentScreenState extends ConsumerState<UploadDocumentScreen> {
 
       if (success && mounted) {
         ref.invalidate(documentsProvider); // Refresh document list
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Document uploaded successfully'),
-            backgroundColor: Colors.green,
-          ),
+        DialogUtils.showSuccessDialog(
+          context, 
+          message: 'Document uploaded successfully',
+          onDismiss: () => context.pop(),
         );
-        context.pop();
       } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to upload document'),
-            backgroundColor: Colors.redAccent,
-          ),
+        DialogUtils.showErrorDialog(
+          context, 
+          message: 'Failed to upload document',
         );
       }
     } catch (e) {
       if (mounted) DialogUtils.hideLoadingDialog(context);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.redAccent,
-          ),
+        DialogUtils.showErrorDialog(
+          context, 
+          message: e.toString().replaceAll('Exception: ', ''),
         );
       }
     }

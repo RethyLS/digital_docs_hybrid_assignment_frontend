@@ -198,3 +198,4 @@ class _RoleDetailScreenState extends ConsumerState<RoleDetailScreen> {
     );
   }
 }
+
