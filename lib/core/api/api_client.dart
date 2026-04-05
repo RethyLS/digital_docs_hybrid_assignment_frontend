@@ -45,11 +45,11 @@ final dioProvider = Provider<Dio>((ref) {
               } else {
                 // If it fails with ConnectionTimeout or ConnectionRefused, we are on a physical device
                 // Since you are using Wireless ADB, we must hit your PC's actual Wi-Fi IP address instead of localhost.
-                globalResolvedBaseUrl = 'http://192.168.1.114:8000/api';
+                globalResolvedBaseUrl = 'http://192.168.1.135:8000/api';
               }
               } catch (e) {
               // Any other unknown error -> fallback to physical device 
-              globalResolvedBaseUrl = 'http://192.168.1.114:8000/api';
+              globalResolvedBaseUrl = 'http://192.168.1.135:8000/api';
               }
               } else {
               // iOS, Web, and Desktop

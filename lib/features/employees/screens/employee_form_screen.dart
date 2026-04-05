@@ -142,23 +142,19 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
 
       if (success && mounted) {
         ref.invalidate(employeesProvider);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(widget.employee == null ? 'Employee added successfully' : 'Employee updated successfully'),
-            backgroundColor: Colors.green,
-          ),
+        DialogUtils.showSuccessDialog(
+          context,
+          message: widget.employee == null ? 'Employee added successfully' : 'Employee updated successfully',
+          onDismiss: () => context.go('/employees'),
         );
-        context.go('/employees');
       }
     } catch (e) {
       if (mounted) DialogUtils.hideLoadingDialog(context);
       
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.redAccent,
-          ),
+        DialogUtils.showErrorDialog(
+          context,
+          message: e.toString().replaceAll('Exception: ', ''),
         );
       }
     }

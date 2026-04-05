@@ -79,23 +79,19 @@ class _EmployeeDetailScreenState extends ConsumerState<EmployeeDetailScreen> {
 
         if (success && mounted) {
           ref.invalidate(employeesProvider);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Employee deleted successfully'),
-              backgroundColor: Colors.green,
-            ),
+          DialogUtils.showSuccessDialog(
+            context,
+            message: 'Employee deleted successfully',
+            onDismiss: () => context.go('/employees'),
           );
-          context.go('/employees');
         }
       } catch (e) {
         if (mounted) DialogUtils.hideLoadingDialog(context);
         
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(e.toString().replaceAll('Exception: ', '')),
-              backgroundColor: Colors.redAccent,
-            ),
+          DialogUtils.showErrorDialog(
+            context,
+            message: e.toString().replaceAll('Exception: ', ''),
           );
         }
       }
