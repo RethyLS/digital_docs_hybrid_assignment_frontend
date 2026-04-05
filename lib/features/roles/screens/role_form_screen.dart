@@ -24,7 +24,6 @@ class _RoleFormScreenState extends ConsumerState<RoleFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
 
-  bool _isLoading = false;
   final Set<String> _selectedPermissions = {};
 
   @override
@@ -145,9 +144,37 @@ class _RoleFormScreenState extends ConsumerState<RoleFormScreen> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        'Permissions',
-                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Permissions',
+                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          permissionsAsync.when(
+                            data: (response) {
+                              final allSelected = response.data.isNotEmpty && _selectedPermissions.length == response.data.length;
+                              return TextButton.icon(
+                                onPressed: () {
+                                  setState(() {
+                                    if (allSelected) {
+                                      _selectedPermissions.clear();
+                                    } else {
+                                      _selectedPermissions.addAll(response.data.map((p) => p.name!).where((name) => name.isNotEmpty));
+                                    }
+                                  });
+                                },
+                                icon: Icon(
+                                  allSelected ? Icons.check_box : Icons.check_box_outline_blank,
+                                  size: 20,
+                                ),
+                                label: Text(allSelected ? 'Deselect All' : 'Select All'),
+                              );
+                            },
+                            loading: () => const SizedBox.shrink(),
+                            error: (_, __) => const SizedBox.shrink(),
+                          ),
+                        ],
                       ),
                     ),
                     const Divider(height: 1),
