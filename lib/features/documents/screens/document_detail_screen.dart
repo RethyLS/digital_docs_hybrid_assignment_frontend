@@ -6,6 +6,7 @@ import 'package:hybrid_digital_docs_assignment_frontend/features/documents/model
 import 'package:hybrid_digital_docs_assignment_frontend/features/documents/providers/document_provider.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/features/documents/repositories/document_repository.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
+import 'package:hybrid_digital_docs_assignment_frontend/shared/utils/dialog_utils.dart';
 import 'package:intl/intl.dart';
 
 class DocumentDetailScreen extends ConsumerStatefulWidget {
@@ -18,7 +19,7 @@ class DocumentDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
-  bool _isDeleting = false;
+
 
   Future<void> _deleteDocument() async {
     final confirm = await showDialog<bool>(
@@ -41,33 +42,28 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
     );
 
     if (confirm == true) {
-      setState(() => _isDeleting = true);
+      DialogUtils.showLoadingDialog(context, message: 'Deleting...');
       try {
         final repo = ref.read(documentRepositoryProvider);
         final success = await repo.deleteDocument(widget.document.id);
         
+        if (mounted) DialogUtils.hideLoadingDialog(context);
+
         if (success && mounted) {
           ref.invalidate(documentsProvider);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Document deleted successfully'),
-              backgroundColor: Colors.green,
-            ),
+          DialogUtils.showSuccessDialog(
+            context,
+            message: 'Document deleted successfully',
+            onDismiss: () => context.pop(),
           );
-          context.pop();
         }
       } catch (e) {
+        if (mounted) DialogUtils.hideLoadingDialog(context);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(e.toString().replaceAll('Exception: ', '')),
-              backgroundColor: Colors.redAccent,
-            ),
+          DialogUtils.showErrorDialog(
+            context,
+            message: e.toString().replaceAll('Exception: ', ''),
           );
-        }
-      } finally {
-        if (mounted) {
-          setState(() => _isDeleting = false);
         }
       }
     }
@@ -83,10 +79,8 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
         title: const Text('Document Details'),
         actions: [
           IconButton(
-            icon: _isDeleting 
-              ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
-              : HeroIcon(HeroIcons.trash, size: 24, color: Colors.redAccent.withValues(alpha: 0.8)),
-            onPressed: _isDeleting ? null : _deleteDocument,
+            icon: HeroIcon(HeroIcons.trash, size: 24, color: Colors.redAccent.withValues(alpha: 0.8)),
+            onPressed: _deleteDocument,
           ),
           const SizedBox(width: 8),
         ],
@@ -284,3 +278,4 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
     );
   }
 }
+
