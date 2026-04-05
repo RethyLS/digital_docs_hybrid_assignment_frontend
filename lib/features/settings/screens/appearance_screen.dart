@@ -85,12 +85,6 @@ class AppearanceScreen extends ConsumerWidget {
     return Container(
       decoration: BoxDecoration(
         color: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.05) : Colors.transparent,
-        border: Border(
-          left: BorderSide(
-            color: isSelected ? theme.colorScheme.primary : Colors.transparent,
-            width: 4,
-          ),
-        ),
       ),
       child: ListTile(
         leading: HeroIcon(
