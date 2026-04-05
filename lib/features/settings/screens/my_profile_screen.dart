@@ -115,27 +115,25 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
     };
 
     try {
-      final success = await ref.read(userProfileProvider.notifier).updateProfile(userId, payload);
-      
-      if (mounted) DialogUtils.hideLoadingDialog(context);
+    final success = await ref.read(userProfileProvider.notifier).updateProfile(userId, payload);
 
-      if (success && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) DialogUtils.hideLoadingDialog(context);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.redAccent),
-        );
-      }
+    if (mounted) DialogUtils.hideLoadingDialog(context);
+
+    if (success && mounted) {
+      DialogUtils.showSuccessDialog(
+        context,
+        message: 'Profile updated successfully',
+      );
     }
-  }
+    } catch (e) {
+    if (mounted) DialogUtils.hideLoadingDialog(context);
+    if (mounted) {
+      DialogUtils.showErrorDialog(
+        context,
+        message: e.toString().replaceAll('Exception: ', ''),
+      );
+    }
+    }  }
 
   String _getInitials(String name) {
     if (name.isEmpty) return '??';
