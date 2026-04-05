@@ -16,13 +16,15 @@ class SecurityScreen extends ConsumerStatefulWidget {
   ConsumerState<SecurityScreen> createState() => _SecurityScreenState();
 }
 
-class _SecurityScreenState extends ConsumerState<SecurityScreen> {
+class _SecurityScreenState extends ConsumerState<SecurityScreen> {  
   final _formKey = GlobalKey<FormState>();
   final _oldPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();       
 
-  bool _isLoading = false;
+  bool _obscureOld = true;
+  bool _obscureNew = true;
+  bool _obscureConfirm = true;
 
   @override
   void dispose() {
@@ -36,13 +38,14 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_newPasswordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('security_screen.password_mismatch'.tr()), backgroundColor: Colors.redAccent),
+      DialogUtils.showErrorDialog(
+        context,
+        message: 'security_screen.password_mismatch'.tr(),
       );
       return;
     }
 
-    DialogUtils.showLoadingDialog(context, message: 'Saving...');
+    DialogUtils.showLoadingDialog(context, message: 'Saving...');   
 
     try {
       final success = await ref.read(userProfileProvider.notifier).updatePassword(
@@ -57,23 +60,32 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
         _oldPasswordController.clear();
         _newPasswordController.clear();
         _confirmPasswordController.clear();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('security_screen.password_changed'.tr()),
-            backgroundColor: Colors.green,
-          ),
+        DialogUtils.showSuccessDialog(
+          context,
+          message: 'security_screen.password_changed'.tr(),
+          onDismiss: () {
+            if (mounted) {
+              setState(() {
+                _obscureOld = true;
+                _obscureNew = true;
+                _obscureConfirm = true;
+              });
+            }
+          },
         );
       }
     } catch (e) {
       if (mounted) DialogUtils.hideLoadingDialog(context);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.redAccent),
+        DialogUtils.showErrorDialog(
+          context,
+          message: e.toString().replaceAll('Exception: ', ''),
         );
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -91,17 +103,21 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
               key: _formKey,
               child: CustomCard(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,     
                   children: [
                     Text(
-                      'security_screen.change_password'.tr(),
+                      'security_screen.change_password'.tr(),       
                       style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
-                      label: 'security_screen.old_password'.tr(),
+                      label: 'security_screen.old_password'.tr(),   
                       controller: _oldPasswordController,
-                      obscureText: true,
+                      obscureText: _obscureOld,
+                      suffixIcon: IconButton(
+                        icon: Icon(_obscureOld ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
+                        onPressed: () => setState(() => _obscureOld = !_obscureOld),
+                      ),
                       validator: (val) {
                         if (val == null || val.isEmpty) return 'Required';
                         return null;
@@ -109,9 +125,13 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
-                      label: 'security_screen.new_password'.tr(),
+                      label: 'security_screen.new_password'.tr(),   
                       controller: _newPasswordController,
-                      obscureText: true,
+                      obscureText: _obscureNew,
+                      suffixIcon: IconButton(
+                        icon: Icon(_obscureNew ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
+                        onPressed: () => setState(() => _obscureNew = !_obscureNew),
+                      ),
                       validator: (val) {
                         if (val == null || val.isEmpty) return 'Required';
                         if (val.length < 8) return 'Minimum 8 characters';
@@ -121,8 +141,12 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
                     const SizedBox(height: 16),
                     CustomTextField(
                       label: 'security_screen.confirm_password'.tr(),
-                      controller: _confirmPasswordController,
-                      obscureText: true,
+                      controller: _confirmPasswordController,       
+                      obscureText: _obscureConfirm,
+                      suffixIcon: IconButton(
+                        icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
+                        onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                      ),
                       validator: (val) {
                         if (val == null || val.isEmpty) return 'Required';
                         return null;
@@ -143,9 +167,8 @@ class _SecurityScreenState extends ConsumerState<SecurityScreen> {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        error: (err, stack) => Center(child: Text('Error: $err')),  
       ),
     );
   }
 }
-
