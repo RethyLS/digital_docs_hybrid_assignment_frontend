@@ -50,22 +50,18 @@ class _RoleDetailScreenState extends ConsumerState<RoleDetailScreen> {
 
         if (success && mounted) {
           ref.invalidate(rolesProvider);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Role deleted successfully'),
-              backgroundColor: Colors.green,
-            ),
+          DialogUtils.showSuccessDialog(
+            context,
+            message: 'Role deleted successfully',
+            onDismiss: () => context.pop(),
           );
-          context.pop();
         }
       } catch (e) {
         if (mounted) DialogUtils.hideLoadingDialog(context);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(e.toString().replaceAll('Exception: ', '')),
-              backgroundColor: Colors.redAccent,
-            ),
+          DialogUtils.showErrorDialog(
+            context,
+            message: e.toString().replaceAll('Exception: ', ''),
           );
         }
       }

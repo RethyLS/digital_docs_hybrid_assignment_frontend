@@ -76,30 +76,28 @@ class _RoleFormScreenState extends ConsumerState<RoleFormScreen> {
 
       if (success && mounted) {
         ref.invalidate(rolesProvider);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(isEditing ? 'Role updated successfully' : 'Role created successfully'),
-            backgroundColor: Colors.green,
-          ),
+        DialogUtils.showSuccessDialog(
+          context,
+          message: isEditing ? 'Role updated successfully' : 'Role created successfully',
+          onDismiss: () {
+            if (isEditing) {
+              // Pop Edit, then Pop Detail
+              context.pop();
+              context.pop();
+            } else {
+              // Pop Add
+              context.pop();
+            }
+          },
         );
-        if (isEditing) {
-          // Pop Edit, then Pop Detail
-          context.pop();
-          context.pop();
-        } else {
-          // Pop Add
-          context.pop();
-        }
       }
     } catch (e) {
       if (mounted) DialogUtils.hideLoadingDialog(context);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.redAccent,
-          ),
+        DialogUtils.showErrorDialog(
+          context,
+          message: e.toString().replaceAll('Exception: ', ''),
         );
       }
     }
