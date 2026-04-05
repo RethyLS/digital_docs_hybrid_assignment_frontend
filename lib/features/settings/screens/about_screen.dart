@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
@@ -11,7 +12,7 @@ class AboutScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('About'),
+        title: Text('settings.about'.tr()),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -29,7 +30,7 @@ class AboutScreen extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             Text(
-              'Digital Document System',
+              'Digital Docs',
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: theme.colorScheme.primary,
@@ -39,7 +40,7 @@ class AboutScreen extends StatelessWidget {
             Text(
               'Version 1.0.0',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
             const SizedBox(height: 32),
@@ -47,17 +48,17 @@ class AboutScreen extends StatelessWidget {
               context,
               title: 'Project Overview',
               content:
-                  'A comprehensive HR Document Management System designed to streamline organization workflows, employee records, and sensitive documentation with high security and modern accessibility.',
+                  'Digital Docs is a modern HR Document Management System designed to simplify organizational workflows, employee record keeping, and secure document storage with high accessibility and platform-native performance.',
             ),
             const SizedBox(height: 24),
             _buildFeaturesSection(context),
             const SizedBox(height: 40),
-            Divider(color: theme.colorScheme.outline.withOpacity(0.1)),
+            Divider(color: theme.colorScheme.outline.withValues(alpha: 0.1)),
             const SizedBox(height: 20),
             Text(
-              '© 2026 HR Digital Docs Assignment',
+              '© 2026 Digital Docs',
               style: theme.textTheme.labelMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.4),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
               ),
             ),
             const SizedBox(height: 40),
@@ -82,7 +83,7 @@ class AboutScreen extends StatelessWidget {
           content,
           style: theme.textTheme.bodyMedium?.copyWith(
             height: 1.6,
-            color: theme.colorScheme.onSurface.withOpacity(0.8),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
           ),
           textAlign: TextAlign.center,
         ),
@@ -97,16 +98,17 @@ class AboutScreen extends StatelessWidget {
       children: [
         Center(
           child: Text(
-            'Key Features',
+            'Key Capabilities',
             style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(height: 16),
-        _buildFeatureItem(context, HeroIcons.documentCheck, 'Secure Document Storage'),
-        _buildFeatureItem(context, HeroIcons.users, 'Employee Directory & Profiles'),
-        _buildFeatureItem(context, HeroIcons.shieldCheck, 'Role-Based Access Control'),
-        _buildFeatureItem(context, HeroIcons.bellAlert, 'Smart Notifications'),
-        _buildFeatureItem(context, HeroIcons.devicePhoneMobile, 'Cross-Platform Sync'),
+        _buildFeatureItem(context, HeroIcons.documentText, 'Automated Document Numbering'),
+        _buildFeatureItem(context, HeroIcons.users, 'Employee Assignment & Tracking'),
+        _buildFeatureItem(context, HeroIcons.shieldCheck, 'Spatie Role-Based Permissions'),
+        _buildFeatureItem(context, HeroIcons.adjustmentsHorizontal, 'Custom Document Prefixes'),
+        _buildFeatureItem(context, HeroIcons.devicePhoneMobile, 'Cross-Device Cloud Sync'),
+        _buildFeatureItem(context, HeroIcons.language, 'Native English & Khmer Support'),
       ],
     );
   }

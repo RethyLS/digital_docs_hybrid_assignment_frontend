@@ -1,5 +1,5 @@
 {
-  "app_title": "HR Document System",
+  "app_title": "Digital Docs",
   "common": {
     "save": "Save",
     "cancel": "Cancel",
@@ -11,7 +11,7 @@
   },
   "login": {
     "sign_in": "Sign In",
-    "subtitle": "Access the HR Document System",
+    "subtitle": "Access Digital Docs",
     "email": "Email Address",
     "email_hint": "name@organization.com",
     "password": "Password",
