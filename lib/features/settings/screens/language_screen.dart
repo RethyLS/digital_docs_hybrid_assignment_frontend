@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:heroicons/heroicons.dart';
 import 'package:hybrid_digital_docs_assignment_frontend/shared/widgets/custom_card.dart';
 
 class LanguageScreen extends ConsumerWidget {
@@ -63,29 +64,36 @@ class LanguageScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final isSelected = locale.languageCode == currentLocale.languageCode;
 
-    return ListTile(
-      leading: Text(
-        flag,
-        style: const TextStyle(fontSize: 24),
+    return Container(
+      decoration: BoxDecoration(
+        color: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.05) : Colors.transparent,
       ),
-      title: Text(
-        title,
-        style: theme.textTheme.bodyLarge?.copyWith(
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      child: ListTile(
+        leading: Text(
+          flag,
+          style: const TextStyle(fontSize: 24),
         ),
-      ),
-      trailing: Switch.adaptive(
-        value: isSelected,
-        activeColor: theme.colorScheme.primary,
-        onChanged: (bool value) {
-          if (value) {
-            context.setLocale(locale);
-          }
+        title: Text(
+          title,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            color: isSelected ? theme.colorScheme.primary : null,
+          ),
+        ),
+        trailing: isSelected
+            ? Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary,
+                  shape: BoxShape.circle,
+                ),
+                child: const HeroIcon(HeroIcons.check, size: 16, color: Colors.white),
+              )
+            : null,
+        onTap: () {
+          context.setLocale(locale);
         },
       ),
-      onTap: () {
-        context.setLocale(locale);
-      },
     );
   }
 }
