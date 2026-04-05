@@ -65,8 +65,9 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
     if (!_formKey.currentState!.validate()) return;
     
     if (widget.user == null && _passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('security_screen.password_mismatch'.tr()), backgroundColor: Colors.redAccent),
+      DialogUtils.showErrorDialog(
+        context,
+        message: 'security_screen.password_mismatch'.tr(),
       );
       return;
     }
@@ -101,30 +102,26 @@ class _UserFormScreenState extends ConsumerState<UserFormScreen> {
 
       if (success && mounted) {
         ref.invalidate(usersProvider);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(widget.user == null ? 'user_management.user_created'.tr() : 'user_management.user_updated'.tr()),
-            backgroundColor: Colors.green,
-          ),
+        DialogUtils.showSuccessDialog(
+          context,
+          message: widget.user == null ? 'user_management.user_created'.tr() : 'user_management.user_updated'.tr(),
+          onDismiss: () {
+            if (widget.user != null) {
+              context.pop();
+              context.pop();
+            } else {
+              context.pop();
+            }
+          },
         );
-        if (widget.user != null) {
-          // If editing, pop the Edit screen, then pop the Detail screen
-          context.pop();
-          context.pop();
-        } else {
-          // If adding, just pop the Add screen
-          context.pop();
-        }
       }
     } catch (e) {
       if (mounted) DialogUtils.hideLoadingDialog(context);
       
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.redAccent,
-          ),
+        DialogUtils.showErrorDialog(
+          context,
+          message: e.toString().replaceAll('Exception: ', ''),
         );
       }
     }

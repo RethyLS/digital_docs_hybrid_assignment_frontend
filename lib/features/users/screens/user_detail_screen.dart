@@ -51,23 +51,19 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
 
         if (success && mounted) {
           ref.invalidate(usersProvider);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('User deleted successfully'),
-              backgroundColor: Colors.green,
-            ),
+          DialogUtils.showSuccessDialog(
+            context,
+            message: 'User deleted successfully',
+            onDismiss: () => context.pop(),
           );
-          context.pop();
         }
       } catch (e) {
         if (mounted) DialogUtils.hideLoadingDialog(context);
         
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(e.toString().replaceAll('Exception: ', '')),
-              backgroundColor: Colors.redAccent,
-            ),
+          DialogUtils.showErrorDialog(
+            context,
+            message: e.toString().replaceAll('Exception: ', ''),
           );
         }
       }
