@@ -33,6 +33,8 @@ class EmployeeRepository {
         if (status != null && status.isNotEmpty) 'status': status,
       });      return EmployeeResponse.fromJson(response.data);
     } catch (e) {
+      print('=== EMPLOYEE FETCH ERROR ===');
+      print(e.toString());
       // Return a safe empty response so the rest of the app doesn't crash if employees fail to load
       return EmployeeResponse(data: [], meta: null);
     }

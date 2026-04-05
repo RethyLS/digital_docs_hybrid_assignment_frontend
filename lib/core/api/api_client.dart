@@ -1,3 +1,4 @@
+import 'package:hybrid_digital_docs_assignment_frontend/core/auth/auth_provider.dart';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -75,10 +76,23 @@ final dioProvider = Provider<Dio>((ref) {
         }
         return handler.next(response);
       },
-      onError: (DioException e, handler) {
+      onError: (DioException e, handler) async {
         if (kDebugMode) {
           print('<-- Error ${e.message}');
         }
+        
+        // If the token is invalid/expired (401), clear the stored token
+        if (e.response?.statusCode == 401) {
+          try {
+            final prefs = await ref.read(sharedPrefsProvider.future);
+            await prefs.remove('auth_token');
+            globalResolvedBaseUrl = null;
+            
+            // Force Riverpod to update the authProvider state so GoRouter instantly triggers the redirect
+            ref.read(authProvider.notifier).logout();
+          } catch (_) {}
+        }
+        
         return handler.next(e);
       },
     ),
@@ -86,3 +100,7 @@ final dioProvider = Provider<Dio>((ref) {
 
   return dio;
 });
+
+
+
+
