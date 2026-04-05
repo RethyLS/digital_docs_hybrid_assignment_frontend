@@ -73,14 +73,16 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
       try {
         final success = await ref.read(userProfileProvider.notifier).updateAvatar(File(image.path));
         if (success && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Avatar updated successfully'), backgroundColor: Colors.green),
+          DialogUtils.showSuccessDialog(
+            context,
+            message: 'Avatar updated successfully',
           );
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.toString()), backgroundColor: Colors.redAccent),
+          DialogUtils.showErrorDialog(
+            context,
+            message: e.toString(),
           );
         }
       } finally {
@@ -90,12 +92,9 @@ class _MyProfileScreenState extends ConsumerState<MyProfileScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Could not open gallery. Did you fully restart the app? Error: $e'), 
-            backgroundColor: Colors.redAccent,
-            duration: const Duration(seconds: 5),
-          ),
+        DialogUtils.showErrorDialog(
+          context,
+          message: 'Could not open gallery. Did you fully restart the app? Error: $e',
         );
       }
     }

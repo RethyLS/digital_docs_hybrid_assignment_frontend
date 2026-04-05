@@ -77,28 +77,26 @@ class _DocumentPrefixFormScreenState extends ConsumerState<DocumentPrefixFormScr
 
       if (success && mounted) {
         ref.invalidate(documentPrefixesProvider);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(widget.prefix == null ? 'Prefix created successfully' : 'Prefix updated successfully'),
-            backgroundColor: Colors.green,
-          ),
+        DialogUtils.showSuccessDialog(
+          context,
+          message: widget.prefix == null ? 'Prefix created successfully' : 'Prefix updated successfully',
+          onDismiss: () {
+            if (isEditing) {
+              context.pop();
+              context.pop();
+            } else {
+              context.pop();
+            }
+          },
         );
-        if (isEditing) {
-          context.pop();
-          context.pop();
-        } else {
-          context.pop();
-        }
       }
     } catch (e) {
       if (mounted) DialogUtils.hideLoadingDialog(context);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.redAccent,
-          ),
+        DialogUtils.showErrorDialog(
+          context,
+          message: e.toString().replaceAll('Exception: ', ''),
         );
       }
     }

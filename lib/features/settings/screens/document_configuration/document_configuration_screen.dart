@@ -27,45 +27,6 @@ class _DocumentConfigurationScreenState extends ConsumerState<DocumentConfigurat
     super.dispose();
   }
 
-  Future<void> _deletePrefix(DocumentPrefix prefix) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Prefix'),
-        content: Text('Are you sure you want to delete the prefix "${prefix.name}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true) {
-      try {
-        final repo = ref.read(documentPrefixRepositoryProvider);
-        await repo.deletePrefix(prefix.id);
-        ref.invalidate(documentPrefixesProvider);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Prefix deleted successfully'), backgroundColor: Colors.green),
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.toString().replaceAll('Exception: ', '')), backgroundColor: Colors.redAccent),
-          );
-        }
-      }
-    }
-  }
 
   Widget _buildSkeletonList() {
     return ListView.separated(
@@ -255,3 +216,4 @@ class _DocumentConfigurationScreenState extends ConsumerState<DocumentConfigurat
     );
   }
 }
+
